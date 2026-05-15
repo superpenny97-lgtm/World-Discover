@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracolo della Scrittura</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel+Decorative:wght@400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --spade:     #4a5568;
+            --bastoni:   #c05621;
+            --pentacoli: #2f855a;
+            --coppe:     #9b2c2c;
+            --bg:        #0e0d0b;
+            --gold:      #c9a84c;
+            --cream:     #f5f0e8;
+            --dim:       #7a7060;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--bg);
+            color: var(--cream);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Texture di sfondo */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Bordo decorativo */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 16px;
+            border: 1px solid rgba(201,168,76,0.15);
+            pointer-events: none;
+        }
+
+        .title-area {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards;
+        }
+
+        .title-area h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1rem, 4vw, 1.4rem);
+            color: var(--gold);
+            letter-spacing: 4px;
+            font-weight: 400;
+        }
+
+        .title-area .subtitle {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--dim);
+            letter-spacing: 2px;
+            font-style: italic;
+        }
+
+        /* Separatore decorativo */
+        .ornament {
+            color: var(--gold);
+            font-size: 1.2rem;
+            margin: 0 10px;
+            opacity: 0.6;
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 860px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 3px;
+            padding: 36px 32px;
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .card:nth-child(1) { animation: fadeUp 0.8s ease 0.2s forwards; }
+        .card:nth-child(2) { animation: fadeUp 0.8s ease 0.4s forwards; }
+
+        /* Angoli decorativi */
+        .card::before,
+        .card::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-color: var(--gold);
+            border-style: solid;
+            opacity: 0.4;
+        }
+        .card::before { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+        .card::after  { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+
+        .card-type {
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .card-label {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 28px;
+            display: block;
+            letter-spacing: 2px;
+        }
+
+        .card-label.theme-spade     { color: var(--spade);     filter: brightness(1.8); }
+        .card-label.theme-bastoni   { color: var(--bastoni);   filter: brightness(1.4); }
+        .card-label.theme-pentacoli { color: var(--pentacoli); filter: brightness(1.5); }
+        .card-label.theme-coppe     { color: var(--coppe);     filter: brightness(1.6); }
+        .card-label.theme-luogo     { color: var(--gold); }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background: rgba(201,168,76,0.3);
+            margin: 0 auto 28px;
+        }
+
+        .prompt-text {
+            font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+            font-style: italic;
+            line-height: 1.7;
+            color: var(--cream);
+            font-weight: 300;
+        }
+
+        /* Simbolo seme */
+        .seed-symbol {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.7;
+        }
+
+        .btn-area {
+            margin-top: 48px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.6s forwards;
+        }
+
+        .btn-reload {
+            background: none;
+            border: 1px solid rgba(201,168,76,0.3);
+            color: var(--dim);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 12px 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .btn-reload:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(201,168,76,0.05);
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            font-size: 0.75rem;
+            color: rgba(122,112,96,0.5);
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive: su mobile le card si impilano */
+        @media (max-width: 620px) {
+            .card { min-width: 100%; }
+            body::after { inset: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="title-area">
+        <h1>Oracolo della Scrittura</h1>
+        <p class="subtitle"><span class="ornament">✦</span> pesca casuale <span class="ornament">✦</span></p>
+    </div>
+
+    <div class="cards-container">
+
+        <!-- Card 1: Seme narrativo -->
+        <div class="card" id="card-seme">
+            <span class="card-type">Seme narrativo</span>
+            <span class="card-label" id="label-seme">—</span>
+            <span class="seed-symbol" id="symbol-seme">✦</span>
+            <div class="divider"></div>
+            <p class="prompt-text" id="testo-seme">…</p>
+        </div>
+
+        <!-- Card 2: Luogo -->
+        <div class="card" id="card-luogo">
+            <span class="card-type">Luogo</span>
+            <span class="card-label theme-luogo">Topografia</span>
+            <span class="seed-symbol">🜃</span>
+            <div class="divider"></div>
+            <p class="prompt-text" id="testo-luogo">…</p>
+        </div>
+
+    </div>
+
+    <div class="btn-area">
+        <button class="btn-reload" onclick="genera()">✦ Nuovo Oracolo ✦</button>
+        <p class="footer-note">ogni estrazione è unica</p>
+    </div>
+
+    <script>
+        const semi = {
+            spade: {
+                nome: "Spade",
+                simbolo: "⚔",
+                prompts: [
+                    "Una lettera mai spedita viene ritrovata dal destinatario sbagliato.",
+                    "Il momento esatto in cui il protagonista capisce di aver perso una battaglia importante.",
+                    "Una bugia pietosa che finisce per causare un danno irreparabile.",
+                    "L'improvviso silenzio che scende quando un segreto viene svelato.",
+                    "Qualcuno deve scegliere tra la propria dignità e la propria sicurezza.",
+                    "La consapevolezza che una vecchia amicizia è diventata tossica.",
+                    "Un oggetto rotto che non può più essere riparato, metafora di un legame.",
+                    "La notizia che nessuno voleva ricevere arriva durante una festa.",
+                    "Un addio dato senza parole, solo attraverso un gesto minimo.",
+                    "Il peso di una responsabilità che non si è mai desiderata.",
+                    "Qualcuno è intrappolato.",
+                    "Un cattivo presagio appare in sogno.",
+                    "Un terribile incidente da cui è impossibile riprendersi fa perdere al protagonista un arto."
+                ]
+            },
+            bastoni: {
+                nome: "Bastoni",
+                simbolo: "🜂",
+                prompts: [
+                    "Una partenza improvvisa nel cuore della notte, senza bagagli.",
+                    "Un testimone di un crimine scompare improvvisamente.",
+                    "La decisione di distruggere qualcosa per poter ricominciare da zero.",
+                    "Una corsa contro il tempo per fermare un evento inevitabile.",
+                    "Un confronto acceso che cambia radicalmente le gerarchie in gioco.",
+                    "Qualcuno varca per la prima volta una porta che gli era sempre stata vietata.",
+                    "Un cambio di identità radicale dettato dalla necessità di sopravvivere.",
+                    "L'energia sprigionata da una rabbia che è rimasta repressa troppo a lungo.",
+                    "Il momento in cui un piano prudente viene abbandonato per un atto di follia.",
+                    "Un movimento collettivo che travolge le intenzioni del singolo.",
+                    "L'adrenalina di scoprire un talento che non si sapeva di avere.",
+                    "Sei costrett* ad andare dove non volevi."
+                ]
+            },
+            pentacoli: {
+                nome: "Pentacoli",
+                simbolo: "⛤",
+                prompts: [
+                    "Il ritrovamento di un oggetto smarrito che riaccende una speranza.",
+                    "Una notizia inaspettata che risolve un problema economico o pratico.",
+                    "Un gesto di gentilezza da parte di uno sconosciuto che cambia la giornata.",
+                    "La prima pietra di un progetto che sogni di realizzare da anni.",
+                    "Un momento di pace assoluta in un luogo che solitamente è caotico.",
+                    "Una promessa fatta a se stessi che viene finalmente mantenuta.",
+                    "La scoperta di una risorsa nascosta nel proprio giardino (o nel proprio animo).",
+                    "Un successo meritato che arriva dopo un lungo periodo di dubbi.",
+                    "Qualcuno riceve qualcosa di inaspettato.",
+                    "L'incontro con una guida o un mentore che offre la parola giusta.",
+                    "Un banchetto o una celebrazione per un piccolo, grande traguardo raggiunto.",
+                    "Un buon presagio appare in sogno."
+                ]
+            },
+            coppe: {
+                nome: "Coppe",
+                simbolo: "🜄",
+                prompts: [
+                    "Un brindisi fatto tra persone che sanno di non rivedersi più.",
+                    "Il ritorno in un luogo dell'infanzia che ora sembra incredibilmente piccolo.",
+                    "Una battuta ironica fatta nel momento meno opportuno della storia.",
+                    "Il ricordo di un sapore che scatena una cascata di immagini del passato.",
+                    "Una situazione tragica che diventa improvvisamente comica per un assurdo dettaglio.",
+                    "Due nemici che si trovano a ridere della stessa identica cosa.",
+                    "La nostalgia per un futuro che non si è mai verificato.",
+                    "Qualcuno che non si vedeva da tempo ricompare nel cuore della notte.",
+                    "Un gioco d'infanzia ripreso in età adulta con conseguenze inaspettate.",
+                    "Una conversazione dove il sottotesto ironico dice più delle parole.",
+                    "Celebrare una sconfitta con lo stesso entusiasmo di una vittoria.",
+                    "Uno sguardo inatteso fa scattare una scintilla...",
+                    "Una mancanza di rispetto crea una crepa nei rapporti."
+                ]
+            }
+        };
+
+        const luoghi = [
+            // Naturali
+            "Un fiume che scorre al contrario durante i pleniluni.",
+            "Un mare che non riflette il cielo, ma il futuro di chi lo guarda.",
+            "Una montagna che cresce di un metro ogni anno e nessuno sa perché.",
+            "Una foresta dove gli alberi si spostano di notte e al mattino il sentiero è sempre diverso.",
+            "Una palude dove affondano solo i ricordi, non i corpi.",
+            "Un deserto di sale dove il calore crea visioni che durano giorni.",
+            "Un arcipelago che emerge e scompare seguendo le maree lunari.",
+            "Una caverna di ghiaccio che custodisce voci di chi ci ha dormito.",
+            "Un vulcano spento dalla cui bocca soffia vento caldo anche d'inverno.",
+            "Una valle dove non soffia mai il vento e i suoni rimangono sospesi nell'aria.",
+            // Fantasy
+            "Una città costruita sulla schiena di un gigante addormentato da secoli.",
+            "Un ponte di pietra che collega due montagne senza che nessuno lo abbia costruito.",
+            "Una torre che tocca le nuvole ma non ha porte al piano terra.",
+            "Un labirinto di siepi che cambia forma ogni volta che piove.",
+            "Un lago sotterraneo illuminato da creature bioluminescenti che non esistono in superficie.",
+            "Le rovine di una biblioteca che bruciò mille anni fa — i libri sono ancora leggibili nel fumo.",
+            "Un porto fantasma dove attraccano navi di epoche diverse senza equipaggio.",
+            "Una pianura dove crescono cristalli invece di erba, e risuonano al vento.",
+            // Sci-fi
+            "Una stazione orbitale abbandonata che trasmette ancora segnali incomprensibili.",
+            "Un pianeta con due soli dove le ombre puntano in direzioni opposte.",
+            "Una colonia sottomarina sigillata da trent'anni, mai riaperta.",
+            "Una rete di tunnel scavata da macchine che non si sono mai fermate.",
+            "Un satellite artificiale caduto in una foresta: la vegetazione lo ha inglobato.",
+            "Una città dome su Marte dove l'aria sa di rame e nostalgia.",
+            "Un laboratorio criogenico nel permafrost siberiano dove qualcosa si è risvegliato.",
+            // Horror
+            "Un villaggio dove ogni specchio mostra una stanza leggermente diversa da quella reale.",
+            "Una casa costruita su tre livelli: uno visibile, uno che appare solo di notte, uno che non dovrebbe esistere.",
+            "Un cimitero marino dove le lapidi portano nomi di persone ancora vive.",
+            "Una miniera abbandonata che ancora emette suoni di picconi a mezzanotte.",
+            "Un ospedale psichiatrico in rovina dove le porte delle celle si aprono dall'interno.",
+            "Un faro su uno scoglio irraggiungibile che lampeggia ancora, senza corrente.",
+            // Confini e strutture
+            "Il confine esatto tra due paesi nemici: una striscia di terra larga tre metri in cui vige una pace obbligata.",
+            "Un muro che divide una città a metà: nessuno ricorda perché fu costruito.",
+            "Un checkpoint abbandonato in mezzo al nulla, ancora presidiato da un unico soldato.",
+            "Una frontiera naturale — un precipizio — che separa due popoli che non si sono mai incontrati.",
+            "Il sottopassaggio sotto una città: una rete di tunnel usata da chi non vuole essere visto.",
+            "Un edificio industriale dismesso convertito a metà: metà museo, metà fabbrica ancora attiva.",
+            "Un ponte che è anche confine: ogni passo avanti è un territorio diverso.",
+            "Una torre di guardia abbandonata da cui si vedono due paesi contemporaneamente."
+        ];
+
+        function casuale(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function genera() {
+            // Seme
+            const chiavi = Object.keys(semi);
+            const semeKey = casuale(chiavi);
+            const seme = semi[semeKey];
+            const prompt = casuale(seme.prompts);
+
+            document.getElementById('label-seme').textContent = seme.nome;
+            document.getElementById('label-seme').className = 'card-label theme-' + semeKey;
+            document.getElementById('symbol-seme').textContent = seme.simbolo;
+            document.getElementById('testo-seme').textContent = prompt;
+
+            // Luogo
+            const luogo = casuale(luoghi);
+            document.getElementById('testo-luogo').textContent = luogo;
+
+            // Animazione flash sulle card
+            ['card-seme', 'card-luogo'].forEach(id => {
+                const el = document.getElementById(id);
+                el.style.transition = 'opacity 0.15s';
+                el.style.opacity = '0.3';
+                setTimeout(() => { el.style.opacity = '1'; }, 150);
+            });
+        }
+
+        // Prima generazione all'avvio
+        genera();
+    </script>
+</body>
+</html>
