@@ -218,7 +218,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
   </div>
   <div class="seed-row">
     <span class="seed-label">Seed</span>
-    <input class="seed-input" id="seed-input" type="text" placeholder="casuale" maxlength="12">
+    <input class="seed-input" id="seed-input" type="text" placeholder="casuale" maxlength="12" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <button class="seed-btn" onclick="usaSeed()">Usa</button>
     <button class="seed-btn" onclick="nuovoSeed()">↺</button>
   </div>
@@ -953,6 +953,26 @@ function chiudiSeFuori(e){if(e.target===document.getElementById('overlay'))chiud
 
 // Init slider
 aggiornaSlider();
+
+// ── ANTI-AUTOFOCUS MOBILE ──
+// Impedisce che l'input seed riceva focus automatico al caricamento
+// (su iOS/Android causa lo scroll immediato verso l'input e la tastiera)
+(function(){
+  const inp = document.getElementById('seed-input');
+  // Blocca qualsiasi tentativo di focus nei primi 2 secondi
+  const guard = function(e){ e.preventDefault(); e.stopPropagation(); };
+  inp.addEventListener('focus', guard, true);
+  inp.setAttribute('tabindex', '-1');
+  setTimeout(function(){
+    inp.removeEventListener('focus', guard, true);
+    inp.setAttribute('tabindex', '0');
+  }, 2000);
+
+  // Su mobile: scrollTop a 0 dopo il caricamento
+  window.addEventListener('load', function(){
+    setTimeout(function(){ window.scrollTo(0,0); }, 100);
+  });
+})();
 </script>
 </body>
     </html>
