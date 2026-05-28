@@ -1,413 +1,958 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oracolo della Scrittura</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel+Decorative:wght@400&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --spade:     #4a5568;
-            --bastoni:   #c05621;
-            --pentacoli: #2f855a;
-            --coppe:     #9b2c2c;
-            --bg:        #0e0d0b;
-            --gold:      #c9a84c;
-            --cream:     #f5f0e8;
-            --dim:       #7a7060;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracolo della Scrittura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel+Decorative:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0d0b;--gold:#c9a84c;--cream:#f5f0e8;--dim:#7a7060;
+  --spade:#8fa0b8;--bastoni:#e07a40;--pentacoli:#4aaa6a;--coppe:#d45a5a;--stella:#a98fd4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Cormorant Garamond',serif;background:var(--bg);color:var(--cream);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:30px 20px 120px;position:relative}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse at 20% 50%,rgba(201,168,76,.04) 0%,transparent 60%),
+  radial-gradient(ellipse at 80% 20%,rgba(201,168,76,.03) 0%,transparent 50%);
+  pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:16px;border:1px solid rgba(201,168,76,.15);pointer-events:none;z-index:0}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── TITLE ── */
+.title-area{text-align:center;margin-top:20px;margin-bottom:36px;opacity:0;animation:fadeUp .9s ease .1s forwards;position:relative;z-index:1}
+.title-area h1{font-family:'Cinzel Decorative',serif;font-size:clamp(1rem,4vw,1.5rem);color:var(--gold);letter-spacing:5px;font-weight:400}
+.title-area .subtitle{margin-top:10px;font-size:.82rem;color:var(--dim);letter-spacing:2px;font-style:italic}
+.ornament{color:var(--gold);margin:0 8px;opacity:.5}
 
-        body {
-            font-family: 'Cormorant Garamond', serif;
-            background: var(--bg);
-            color: var(--cream);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 30px 20px;
-            position: relative;
-            overflow: hidden;
-        }
+/* ── SETUP PANEL ── */
+.setup-panel{width:100%;max-width:600px;position:relative;z-index:1;opacity:0;animation:fadeUp .9s ease .2s forwards;
+  background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.15);border-radius:3px;padding:28px 32px;margin-bottom:32px;text-align:center}
+.setup-panel h2{font-family:'Cinzel Decorative',serif;font-size:.8rem;color:var(--gold);letter-spacing:3px;margin-bottom:20px}
+.setup-row{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.setup-label{font-size:.85rem;color:var(--dim);letter-spacing:1px}
+.player-count{font-family:'Cinzel Decorative',serif;font-size:1.4rem;color:var(--gold);min-width:32px;text-align:center}
+input[type=range]{-webkit-appearance:none;width:160px;height:2px;background:rgba(201,168,76,.3);border-radius:1px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer;border:none}
 
-        /* Texture di sfondo */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background:
-                radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.04) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.03) 0%, transparent 50%);
-            pointer-events: none;
-        }
+.seed-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.seed-label{font-size:.7rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase}
+.seed-input{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);color:var(--cream);
+  font-family:'Cormorant Garamond',serif;font-size:.9rem;padding:5px 10px;border-radius:2px;width:110px;text-align:center}
+.seed-input:focus{outline:none;border-color:rgba(201,168,76,.5)}
+.seed-btn{background:none;border:1px solid rgba(201,168,76,.25);color:var(--dim);font-family:'Cormorant Garamond',serif;
+  font-size:.7rem;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;cursor:pointer;border-radius:2px;transition:all .25s}
+.seed-btn:hover{border-color:var(--gold);color:var(--gold)}
 
-        /* Bordo decorativo */
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 16px;
-            border: 1px solid rgba(201,168,76,0.15);
-            pointer-events: none;
-        }
+/* ── PROGRESS ── */
+.progress-bar{width:100%;max-width:880px;position:relative;z-index:1;margin-bottom:28px;display:none}
+.progress-inner{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.prog-pip{width:22px;height:22px;border-radius:50%;border:1px solid rgba(201,168,76,.25);
+  display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--dim);transition:all .4s}
+.prog-pip.done{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold)}
+.prog-pip.stella-pip{background:rgba(123,94,167,.2);border-color:#a98fd4;color:#a98fd4}
+.prog-label{text-align:center;font-size:.65rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
 
-        .title-area {
-            text-align: center;
-            margin-bottom: 40px;
-            opacity: 0;
-            animation: fadeUp 0.8s ease forwards;
-        }
+/* ── CARDS ── */
+.cards-container{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;width:100%;max-width:880px;position:relative;z-index:1}
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.2);border-radius:3px;
+  padding:36px 32px;flex:1;min-width:min(280px,100%);max-width:400px;text-align:center;position:relative;
+  opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .5s ease}
+.card.visible{opacity:1;transform:translateY(0)}
+.card::before,.card::after{content:'';position:absolute;width:12px;height:12px;border-color:var(--gold);border-style:solid;opacity:.35}
+.card::before{top:8px;left:8px;border-width:1px 0 0 1px}
+.card::after{bottom:8px;right:8px;border-width:0 1px 1px 0}
+.card.stella-card{border-color:rgba(123,94,167,.5);max-width:600px;flex-basis:100%}
+.card.stella-card::before,.card.stella-card::after{border-color:#7b5ea7;opacity:.5}
 
-        .title-area h1 {
-            font-family: 'Cinzel Decorative', serif;
-            font-size: clamp(1rem, 4vw, 1.4rem);
-            color: var(--gold);
-            letter-spacing: 4px;
-            font-weight: 400;
-        }
+.card-number{position:absolute;top:10px;right:14px;font-family:'Cinzel Decorative',serif;
+  font-size:.6rem;color:rgba(201,168,76,.3);letter-spacing:1px}
+.card-label{font-family:'Cinzel Decorative',serif;font-size:1rem;font-weight:400;margin-bottom:24px;display:block;letter-spacing:2px}
+.card-label.theme-spade{color:var(--spade)}
+.card-label.theme-bastoni{color:var(--bastoni)}
+.card-label.theme-pentacoli{color:var(--pentacoli)}
+.card-label.theme-coppe{color:var(--coppe)}
+.card-label.theme-stella{color:var(--stella)}
+.card-label.theme-luogo{color:var(--gold)}
+.divider{width:36px;height:1px;background:rgba(201,168,76,.25);margin:0 auto 24px}
+.seed-symbol{font-size:2rem;margin-bottom:14px;display:block;opacity:.65}
+.prompt-text{font-size:clamp(1.05rem,2.8vw,1.25rem);font-style:italic;line-height:1.75;color:var(--cream);font-weight:300}
 
-        .title-area .subtitle {
-            margin-top: 8px;
-            font-size: 0.85rem;
-            color: var(--dim);
-            letter-spacing: 2px;
-            font-style: italic;
-        }
+/* ── BOTTONE + PASSO ── */
+.btn-area{margin-top:40px;text-align:center;position:relative;z-index:1;opacity:0;animation:fadeUp .9s ease .3s forwards;width:100%}
+.btn-oracle{background:none;border:1px solid rgba(201,168,76,.4);color:rgba(201,168,76,.75);
+  font-family:'Cinzel Decorative',serif;font-size:1rem;letter-spacing:3px;padding:16px 44px;
+  cursor:pointer;transition:all .35s ease;border-radius:2px;display:block;margin:0 auto;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn-oracle:hover,.btn-oracle:active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06)}
+.btn-oracle:disabled{opacity:.3;cursor:not-allowed;border-color:rgba(201,168,76,.15)}
+.footer-note{margin-top:16px;font-size:.72rem;color:rgba(122,112,96,.4);letter-spacing:1px;font-style:italic}
 
-        /* Separatore decorativo */
-        .ornament {
-            color: var(--gold);
-            font-size: 1.2rem;
-            margin: 0 10px;
-            opacity: 0.6;
-        }
+.btn-passo{display:none;margin:12px auto 0;background:none;border:1px solid rgba(201,168,76,.2);
+  color:var(--dim);font-family:'Cormorant Garamond',serif;font-size:.8rem;letter-spacing:3px;
+  text-transform:uppercase;padding:8px 24px;cursor:pointer;border-radius:2px;transition:all .25s;
+  -webkit-tap-highlight-color:transparent}
+.btn-passo:hover{border-color:var(--gold);color:var(--gold)}
+.turn-indicator{margin-top:10px;font-size:.75rem;color:var(--dim);font-style:italic;letter-spacing:1px;min-height:18px}
 
-        .cards-container {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
-            max-width: 860px;
-        }
+/* ── FINE PARTITA ── */
+.end-screen{display:none;width:100%;max-width:600px;margin-top:48px;text-align:center;
+  position:relative;z-index:1;opacity:0;transition:opacity .6s}
+.end-screen.visible{opacity:1}
+.end-title{font-family:'Cinzel Decorative',serif;font-size:1.2rem;color:var(--gold);letter-spacing:4px;margin-bottom:16px}
+.end-seed{font-size:.8rem;color:var(--dim);letter-spacing:2px;margin-bottom:24px;font-style:italic}
+.btn-restart{background:none;border:1px solid rgba(201,168,76,.3);color:var(--dim);
+  font-family:'Cormorant Garamond',serif;font-size:.85rem;letter-spacing:3px;text-transform:uppercase;
+  padding:12px 28px;cursor:pointer;border-radius:2px;transition:all .3s}
+.btn-restart:hover{border-color:var(--gold);color:var(--gold)}
 
-        .card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(201,168,76,0.2);
-            border-radius: 3px;
-            padding: 36px 32px;
-            flex: 1;
-            min-width: 280px;
-            max-width: 400px;
-            text-align: center;
-            position: relative;
-            opacity: 0;
-            transform: translateY(20px);
-        }
+/* ── SEZIONE STELLA ── */
+.stella-section{display:none;width:100%;max-width:880px;margin-top:40px;position:relative;z-index:1;
+  opacity:0;transform:translateY(24px);transition:opacity .6s ease .2s,transform .6s ease .2s}
+.stella-section.visible{opacity:1;transform:translateY(0)}
+.stella-divider{text-align:center;margin-bottom:24px;position:relative}
+.stella-divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(123,94,167,.2)}
+.stella-divider span{font-family:'Cinzel Decorative',serif;font-size:.75rem;letter-spacing:4px;color:#a98fd4;background:var(--bg);padding:0 16px;position:relative}
 
-        .card:nth-child(1) { animation: fadeUp 0.8s ease 0.2s forwards; }
-        .card:nth-child(2) { animation: fadeUp 0.8s ease 0.4s forwards; }
+/* Iniziativa */
+.initiative-box{background:rgba(123,94,167,.06);border:1px solid rgba(123,94,167,.2);border-radius:3px;
+  padding:18px 20px;margin-bottom:20px;font-size:.85rem;line-height:1.7}
+.initiative-title{font-family:'Cinzel Decorative',serif;font-size:.7rem;color:#a98fd4;letter-spacing:3px;margin-bottom:10px;display:block}
+.initiative-list{list-style:none}
+.initiative-list li{display:flex;align-items:center;gap:10px;padding:3px 0;color:var(--cream);font-style:italic}
+.initiative-list li .init-num{font-family:'Cinzel Decorative',serif;font-size:.65rem;color:#a98fd4;opacity:.7;min-width:16px}
+.initiative-list li.active-turn{color:var(--gold);font-weight:400}
+.initiative-list li.active-turn .init-num{color:var(--gold);opacity:1}
 
-        /* Angoli decorativi */
-        .card::before,
-        .card::after {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border-color: var(--gold);
-            border-style: solid;
-            opacity: 0.4;
-        }
-        .card::before { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
-        .card::after  { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+/* Mappa */
+.map-container{background:#0a0912;border:1px solid rgba(123,94,167,.25);border-radius:3px;padding:20px}
+.map-container canvas{display:block;width:100%;height:auto;border-radius:2px}
+.map-legend{margin-top:14px;display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--dim);font-style:italic}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
-        .card-type {
-            font-size: 0.7rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--dim);
-            margin-bottom: 6px;
-            display: block;
-        }
+/* Box azione PNG */
+.png-action-box{margin-top:16px;background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.12);
+  border-radius:3px;padding:14px 18px;font-size:.9rem;color:var(--cream);font-style:italic;
+  line-height:1.6;min-height:48px;text-align:center;transition:opacity .3s}
+.png-action-title{font-family:'Cinzel Decorative',serif;font-size:.6rem;color:var(--gold);
+  letter-spacing:3px;display:block;margin-bottom:6px;opacity:.6;font-style:normal}
 
-        .card-label {
-            font-family: 'Cinzel Decorative', serif;
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 28px;
-            display: block;
-            letter-spacing: 2px;
-        }
+/* ── MUSIC ── */
+.music-indicator{position:fixed;top:28px;right:32px;z-index:10;display:flex;align-items:center;gap:8px;
+  opacity:0;transition:opacity .5s;cursor:pointer;background:none;border:none;padding:4px;-webkit-tap-highlight-color:transparent}
+.music-indicator.visible{opacity:1}
+.music-bars{display:flex;align-items:flex-end;gap:2px;height:14px}
+.music-bars span{display:block;width:3px;background:var(--gold);opacity:.5;border-radius:1px;height:4px}
+.music-indicator.playing .music-bars span:nth-child(1){animation:bar .8s ease-in-out infinite alternate}
+.music-indicator.playing .music-bars span:nth-child(2){animation:bar .6s ease-in-out .1s infinite alternate}
+.music-indicator.playing .music-bars span:nth-child(3){animation:bar .9s ease-in-out .2s infinite alternate}
+.music-indicator.playing .music-bars span:nth-child(4){animation:bar .7s ease-in-out .05s infinite alternate}
+@keyframes bar{from{height:3px}to{height:13px}}
 
-        .card-label.theme-spade     { color: var(--spade);     filter: brightness(1.8); }
-        .card-label.theme-bastoni   { color: var(--bastoni);   filter: brightness(1.4); }
-        .card-label.theme-pentacoli { color: var(--pentacoli); filter: brightness(1.5); }
-        .card-label.theme-coppe     { color: var(--coppe);     filter: brightness(1.6); }
-        .card-label.theme-luogo     { color: var(--gold); }
+/* ── REGOLAMENTO ── */
+.rules-link{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  font-family:'Cormorant Garamond',serif;font-size:.70rem;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(122,112,96,.4);border:none;border-bottom:1px solid rgba(201,168,76,.12);padding-bottom:2px;
+  cursor:pointer;background:none;transition:color .3s,border-color .3s;white-space:nowrap;z-index:10;
+  -webkit-tap-highlight-color:transparent}
+.rules-link:hover{color:var(--gold);border-bottom-color:rgba(201,168,76,.4)}
 
-        .divider {
-            width: 40px;
-            height: 1px;
-            background: rgba(201,168,76,0.3);
-            margin: 0 auto 28px;
-        }
+.overlay{display:none;position:fixed;inset:0;background:rgba(8,7,6,.94);z-index:200;
+  align-items:center;justify-content:center;padding:32px 20px;overflow-y:auto}
+.overlay.active{display:flex}
+.rules-card{background:#131110;border:1px solid rgba(201,168,76,.22);border-radius:3px;
+  padding:48px 40px;max-width:520px;width:100%;position:relative;animation:fadeUp .35s ease forwards}
+.rules-card::before,.rules-card::after{content:'';position:absolute;width:14px;height:14px;border-color:var(--gold);border-style:solid;opacity:.25}
+.rules-card::before{top:10px;left:10px;border-width:1px 0 0 1px}
+.rules-card::after{bottom:10px;right:10px;border-width:0 1px 1px 0}
+.rules-title{font-family:'Cinzel Decorative',serif;font-size:.95rem;color:var(--gold);letter-spacing:4px;text-align:center;margin-bottom:28px;display:block}
+.rules-list{list-style:none}
+.rules-list li{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;font-size:.95rem;line-height:1.65;color:var(--cream);font-weight:300}
+.rules-list li:last-child{margin-bottom:0}
+.rule-num{font-family:'Cinzel Decorative',serif;font-size:.65rem;color:var(--gold);opacity:.55;min-width:18px;padding-top:4px}
+.rules-section{font-family:'Cinzel Decorative',serif;font-size:.65rem;color:var(--gold);letter-spacing:3px;
+  opacity:.5;margin:20px 0 12px;display:block}
+.rules-divider{width:36px;height:1px;background:rgba(201,168,76,.18);margin:24px auto}
+.rules-close{display:block;margin:0 auto;background:none;border:1px solid rgba(201,168,76,.18);color:var(--dim);
+  font-family:'Cormorant Garamond',serif;font-size:.75rem;letter-spacing:3px;text-transform:uppercase;
+  padding:10px 26px;cursor:pointer;transition:all .3s;border-radius:2px}
+.rules-close:hover{border-color:var(--gold);color:var(--gold)}
 
-        .prompt-text {
-            font-size: clamp(1.05rem, 2.5vw, 1.3rem);
-            font-style: italic;
-            line-height: 1.7;
-            color: var(--cream);
-            font-weight: 300;
-        }
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 
-        /* Simbolo seme */
-        .seed-symbol {
-            font-size: 2rem;
-            margin-bottom: 16px;
-            display: block;
-            opacity: 0.7;
-        }
+/* ── LINK REGOLAMENTO ESTESO ── */
+.ext-rules-link{display:inline-block;margin-top:16px;font-size:.7rem;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(201,168,76,.3);text-decoration:none;border-bottom:1px solid rgba(201,168,76,.12);
+  padding-bottom:1px;transition:all .25s;font-style:normal}
+.ext-rules-link:hover{color:var(--gold);border-bottom-color:rgba(201,168,76,.4)}
 
-        .btn-area {
-            margin-top: 48px;
-            text-align: center;
-            opacity: 0;
-            animation: fadeUp 0.8s ease 0.6s forwards;
-        }
-
-        .btn-reload {
-            background: none;
-            border: 1px solid rgba(201,168,76,0.3);
-            color: var(--dim);
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.85rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            padding: 12px 32px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 2px;
-        }
-
-        .btn-reload:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-            background: rgba(201,168,76,0.05);
-        }
-
-        .footer-note {
-            margin-top: 24px;
-            font-size: 0.75rem;
-            color: rgba(122,112,96,0.5);
-            letter-spacing: 1px;
-            font-style: italic;
-        }
-
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsive: su mobile le card si impilano */
-        @media (max-width: 620px) {
-            .card { min-width: 100%; }
-            body::after { inset: 10px; }
-        }
-    </style>
+@media(max-width:620px){
+  .card{min-width:100%}
+  body::after{inset:10px}
+  .rules-card{padding:36px 24px}
+  .music-indicator{top:20px;right:20px}
+  .btn-oracle{font-size:.9rem;padding:14px 36px}
+  .setup-panel{padding:20px 18px}
+}
+</style>
 </head>
 <body>
 
-    <div class="title-area">
-        <h1>Oracolo della Scrittura</h1>
-        <p class="subtitle"><span class="ornament">✦</span> pesca casuale <span class="ornament">✦</span></p>
+<!-- TITLE -->
+<div class="title-area">
+  <h1>Oracolo della Scrittura</h1>
+  <p class="subtitle"><span class="ornament">✦</span> pesca casuale <span class="ornament">✦</span></p>
+</div>
+
+<!-- SETUP PANEL -->
+<div class="setup-panel" id="setup-panel">
+  <h2>Sessione</h2>
+  <div class="setup-row">
+    <span class="setup-label">Personaggi</span>
+    <input type="range" id="slider-players" min="1" max="5" value="2" oninput="aggiornaSlider()">
+    <span class="player-count" id="player-count">2</span>
+  </div>
+  <div class="seed-row">
+    <span class="seed-label">Seed</span>
+    <input class="seed-input" id="seed-input" type="text" placeholder="casuale" maxlength="12">
+    <button class="seed-btn" onclick="usaSeed()">Usa</button>
+    <button class="seed-btn" onclick="nuovoSeed()">↺</button>
+  </div>
+  <div style="margin-top:10px;font-size:.68rem;color:rgba(122,112,96,.35);letter-spacing:1px;font-style:italic">
+    Inserisci un seed per ricreare la stessa partita
+  </div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progress-bar">
+  <div class="prog-label" id="prog-label">Carta 0 / 10</div>
+  <div class="progress-inner" id="progress-inner"></div>
+</div>
+
+<!-- CARDS -->
+<div class="cards-container" id="cards-container">
+  <div class="card" id="card-luogo">
+    <span class="card-number" id="num-luogo"></span>
+    <span class="card-label theme-luogo">Topografia</span>
+    <span class="seed-symbol">🜃</span>
+    <div class="divider"></div>
+    <p class="prompt-text" id="testo-luogo">…</p>
+  </div>
+  <div class="card" id="card-seme">
+    <span class="card-number" id="num-seme"></span>
+    <span class="card-label" id="label-seme">—</span>
+    <span class="seed-symbol" id="symbol-seme">✦</span>
+    <div class="divider"></div>
+    <p class="prompt-text" id="testo-seme">…</p>
+  </div>
+</div>
+
+<!-- BTN + PASSO -->
+<div class="btn-area">
+  <button class="btn-oracle" id="btn-oracle" onclick="genera()">✦ Nuovo Oracolo ✦</button>
+  <button class="btn-passo" id="btn-passo" onclick="passaTurno()">Passo →</button>
+  <div class="turn-indicator" id="turn-indicator"></div>
+  <p class="footer-note" id="footer-note">premi per iniziare</p>
+</div>
+
+<!-- STELLA SECTION -->
+<div class="stella-section" id="stella-section">
+  <div class="stella-divider"><span>✦ Incontro ✦</span></div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap">
+    <!-- Iniziativa (colonna destra) -->
+    <div class="initiative-box" id="initiative-box" style="flex:0 0 200px;min-width:160px">
+      <span class="initiative-title">Iniziativa</span>
+      <ol class="initiative-list" id="initiative-list"></ol>
     </div>
-
-    <div class="cards-container">
-
-        <!-- Card 1: Seme narrativo -->
-        <div class="card" id="card-seme">
-            <span class="card-type">Seme narrativo</span>
-            <span class="card-label" id="label-seme">—</span>
-            <span class="seed-symbol" id="symbol-seme">✦</span>
-            <div class="divider"></div>
-            <p class="prompt-text" id="testo-seme">…</p>
-        </div>
-
-        <!-- Card 2: Luogo -->
-        <div class="card" id="card-luogo">
-            <span class="card-type">Luogo</span>
-            <span class="card-label theme-luogo">Topografia</span>
-            <span class="seed-symbol">🜃</span>
-            <div class="divider"></div>
-            <p class="prompt-text" id="testo-luogo">…</p>
-        </div>
-
+    <!-- Mappa -->
+    <div class="map-container" style="flex:1;min-width:240px">
+      <canvas id="mappa" width="800" height="480"></canvas>
+      <div class="map-legend" id="map-legend"></div>
     </div>
+  </div>
+  <!-- Box PNG -->
+  <div class="png-action-box" id="png-action-box">
+    <span class="png-action-title">Azione PNG</span>
+    <span id="png-action-text">Seleziona un turno per vedere l'azione del nemico.</span>
+  </div>
+</div>
 
-    <div class="btn-area">
-        <button class="btn-reload" onclick="genera()">✦ Nuovo Oracolo ✦</button>
-        <p class="footer-note">ogni estrazione è unica</p>
-    </div>
+<!-- FINE PARTITA -->
+<div class="end-screen" id="end-screen">
+  <div class="end-title">La partita è conclusa</div>
+  <div class="end-seed" id="end-seed-display"></div>
+  <button class="btn-restart" onclick="riavvia()">↺ Nuova Partita</button>
+  <br><br>
+  <a href="regolamento.html" class="ext-rules-link" target="_blank">Regolamento completo →</a>
+</div>
 
-    <script>
-        const semi = {
-            spade: {
-                nome: "Spade",
-                simbolo: "⚔",
-                prompts: [
-                    "Una lettera mai spedita viene ritrovata dal destinatario sbagliato.",
-                    "Il momento esatto in cui il protagonista capisce di aver perso una battaglia importante.",
-                    "Una bugia pietosa che finisce per causare un danno irreparabile.",
-                    "L'improvviso silenzio che scende quando un segreto viene svelato.",
-                    "Qualcuno deve scegliere tra la propria dignità e la propria sicurezza.",
-                    "La consapevolezza che una vecchia amicizia è diventata tossica.",
-                    "Un oggetto rotto che non può più essere riparato, metafora di un legame.",
-                    "La notizia che nessuno voleva ricevere arriva durante una festa.",
-                    "Un addio dato senza parole, solo attraverso un gesto minimo.",
-                    "Il peso di una responsabilità che non si è mai desiderata.",
-                    "Qualcuno è intrappolato.",
-                    "Un cattivo presagio appare in sogno.",
-                    "Un terribile incidente da cui è impossibile riprendersi fa perdere al protagonista un arto."
-                ]
-            },
-            bastoni: {
-                nome: "Bastoni",
-                simbolo: "🜂",
-                prompts: [
-                    "Una partenza improvvisa nel cuore della notte, senza bagagli.",
-                    "Un testimone di un crimine scompare improvvisamente.",
-                    "La decisione di distruggere qualcosa per poter ricominciare da zero.",
-                    "Una corsa contro il tempo per fermare un evento inevitabile.",
-                    "Un confronto acceso che cambia radicalmente le gerarchie in gioco.",
-                    "Qualcuno varca per la prima volta una porta che gli era sempre stata vietata.",
-                    "Un cambio di identità radicale dettato dalla necessità di sopravvivere.",
-                    "L'energia sprigionata da una rabbia che è rimasta repressa troppo a lungo.",
-                    "Il momento in cui un piano prudente viene abbandonato per un atto di follia.",
-                    "Un movimento collettivo che travolge le intenzioni del singolo.",
-                    "L'adrenalina di scoprire un talento che non si sapeva di avere.",
-                    "Sei costrett* ad andare dove non volevi."
-                ]
-            },
-            pentacoli: {
-                nome: "Pentacoli",
-                simbolo: "⛤",
-                prompts: [
-                    "Il ritrovamento di un oggetto smarrito che riaccende una speranza.",
-                    "Una notizia inaspettata che risolve un problema economico o pratico.",
-                    "Un gesto di gentilezza da parte di uno sconosciuto che cambia la giornata.",
-                    "La prima pietra di un progetto che sogni di realizzare da anni.",
-                    "Un momento di pace assoluta in un luogo che solitamente è caotico.",
-                    "Una promessa fatta a se stessi che viene finalmente mantenuta.",
-                    "La scoperta di una risorsa nascosta nel proprio giardino (o nel proprio animo).",
-                    "Un successo meritato che arriva dopo un lungo periodo di dubbi.",
-                    "Qualcuno riceve qualcosa di inaspettato.",
-                    "L'incontro con una guida o un mentore che offre la parola giusta.",
-                    "Un banchetto o una celebrazione per un piccolo, grande traguardo raggiunto.",
-                    "Un buon presagio appare in sogno."
-                ]
-            },
-            coppe: {
-                nome: "Coppe",
-                simbolo: "🜄",
-                prompts: [
-                    "Un brindisi fatto tra persone che sanno di non rivedersi più.",
-                    "Il ritorno in un luogo dell'infanzia che ora sembra incredibilmente piccolo.",
-                    "Una battuta ironica fatta nel momento meno opportuno della storia.",
-                    "Il ricordo di un sapore che scatena una cascata di immagini del passato.",
-                    "Una situazione tragica che diventa improvvisamente comica per un assurdo dettaglio.",
-                    "Due nemici che si trovano a ridere della stessa identica cosa.",
-                    "La nostalgia per un futuro che non si è mai verificato.",
-                    "Qualcuno che non si vedeva da tempo ricompare nel cuore della notte.",
-                    "Un gioco d'infanzia ripreso in età adulta con conseguenze inaspettate.",
-                    "Una conversazione dove il sottotesto ironico dice più delle parole.",
-                    "Celebrare una sconfitta con lo stesso entusiasmo di una vittoria.",
-                    "Uno sguardo inatteso fa scattare una scintilla...",
-                    "Una mancanza di rispetto crea una crepa nei rapporti."
-                ]
-            }
-        };
+<!-- MUSIC INDICATOR -->
+<button class="music-indicator" id="music-indicator" onclick="toggleMusica()">
+  <div class="music-bars"><span></span><span></span><span></span><span></span></div>
+  <span style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(201,168,76,.4)">♪</span>
+</button>
 
-        const luoghi = [
-            // Naturali
-            "Un fiume che scorre al contrario durante i pleniluni.",
-            "Un mare che non riflette il cielo, ma il futuro di chi lo guarda.",
-            "Una montagna che cresce di un metro ogni anno e nessuno sa perché.",
-            "Una foresta dove gli alberi si spostano di notte e al mattino il sentiero è sempre diverso.",
-            "Una palude dove affondano solo i ricordi, non i corpi.",
-            "Un deserto di sale dove il calore crea visioni che durano giorni.",
-            "Un arcipelago che emerge e scompare seguendo le maree lunari.",
-            "Una caverna di ghiaccio che custodisce voci di chi ci ha dormito.",
-            "Un vulcano spento dalla cui bocca soffia vento caldo anche d'inverno.",
-            "Una valle dove non soffia mai il vento e i suoni rimangono sospesi nell'aria.",
-            // Fantasy
-            "Una città costruita sulla schiena di un gigante addormentato da secoli.",
-            "Un ponte di pietra che collega due montagne senza che nessuno lo abbia costruito.",
-            "Una torre che tocca le nuvole ma non ha porte al piano terra.",
-            "Un labirinto di siepi che cambia forma ogni volta che piove.",
-            "Un lago sotterraneo illuminato da creature bioluminescenti che non esistono in superficie.",
-            "Le rovine di una biblioteca che bruciò mille anni fa — i libri sono ancora leggibili nel fumo.",
-            "Un porto fantasma dove attraccano navi di epoche diverse senza equipaggio.",
-            "Una pianura dove crescono cristalli invece di erba, e risuonano al vento.",
-            // Sci-fi
-            "Una stazione orbitale abbandonata che trasmette ancora segnali incomprensibili.",
-            "Un pianeta con due soli dove le ombre puntano in direzioni opposte.",
-            "Una colonia sottomarina sigillata da trent'anni, mai riaperta.",
-            "Una rete di tunnel scavata da macchine che non si sono mai fermate.",
-            "Un satellite artificiale caduto in una foresta: la vegetazione lo ha inglobato.",
-            "Una città dome su Marte dove l'aria sa di rame e nostalgia.",
-            "Un laboratorio criogenico nel permafrost siberiano dove qualcosa si è risvegliato.",
-            // Horror
-            "Un villaggio dove ogni specchio mostra una stanza leggermente diversa da quella reale.",
-            "Una casa costruita su tre livelli: uno visibile, uno che appare solo di notte, uno che non dovrebbe esistere.",
-            "Un cimitero marino dove le lapidi portano nomi di persone ancora vive.",
-            "Una miniera abbandonata che ancora emette suoni di picconi a mezzanotte.",
-            "Un ospedale psichiatrico in rovina dove le porte delle celle si aprono dall'interno.",
-            "Un faro su uno scoglio irraggiungibile che lampeggia ancora, senza corrente.",
-            // Confini e strutture
-            "Il confine esatto tra due paesi nemici: una striscia di terra larga tre metri in cui vige una pace obbligata.",
-            "Un muro che divide una città a metà: nessuno ricorda perché fu costruito.",
-            "Un checkpoint abbandonato in mezzo al nulla, ancora presidiato da un unico soldato.",
-            "Una frontiera naturale — un precipizio — che separa due popoli che non si sono mai incontrati.",
-            "Il sottopassaggio sotto una città: una rete di tunnel usata da chi non vuole essere visto.",
-            "Un edificio industriale dismesso convertito a metà: metà museo, metà fabbrica ancora attiva.",
-            "Un ponte che è anche confine: ogni passo avanti è un territorio diverso.",
-            "Una torre di guardia abbandonata da cui si vedono due paesi contemporaneamente."
-        ];
+<!-- REGOLAMENTO OVERLAY -->
+<button class="rules-link" onclick="apriRegolamento()">Regolamento</button>
+<div class="overlay" id="overlay" onclick="chiudiSeFuori(event)">
+  <div class="rules-card">
+    <span class="rules-title">Regolamento</span>
+    <ol class="rules-list">
+      <li><span class="rule-num">I</span><span>Prendi un foglio di carta e imposta il numero di personaggi.</span></li>
+      <li><span class="rule-num">II</span><span>Premi <em>Nuovo Oracolo</em> al centro per estrarre una carta.</span></li>
+      <li><span class="rule-num">III</span><span>Usa il prompt <em>Topografia</em> per disegnare l'elemento suggerito sulla mappa.</span></li>
+      <li><span class="rule-num">IV</span><span>Usa il prompt narrativo per descrivere chi, come e perché si trova in quel posto.</span></li>
+    </ol>
+    <span class="rules-section">Stella & Combattimento</span>
+    <ol class="rules-list">
+      <li><span class="rule-num">V</span><span>Se esce la <em>Stella</em> (15% di probabilità) si avvia un incontro: il numero di nemici scala automaticamente con i personaggi presenti.</span></li>
+      <li><span class="rule-num">VI</span><span>L'<em>ordine di iniziativa</em> è generato casualmente e mostrato a fianco della mappa.</span></li>
+      <li><span class="rule-num">VII</span><span>Usa <em>Passo →</em> per avanzare al prossimo turno nell'ordine di iniziativa. Quando tocca a un nemico, compare il box <em>Azione PNG</em> che descrive cosa fa.</span></li>
+      <li><span class="rule-num">VIII</span><span>I nemici non attaccano bersagli con salute tra 0 e –4. Prima usano eventuali regole speciali o magie; se ingaggiati corpo a corpo attaccano; altrimenti si muovono verso il bersaglio più vicino non ingaggiato.</span></li>
+    </ol>
+    <span class="rules-section">Fine Partita & Seed</span>
+    <ol class="rules-list">
+      <li><span class="rule-num">IX</span><span>La partita si conclude alla <strong>decima carta</strong> estratta per personaggio.</span></li>
+      <li><span class="rule-num">X</span><span>Ogni sessione ha un <em>seed</em> unico: annotalo e inseriscilo nella prossima partita per riprodurre esattamente la stessa sequenza di carte.</span></li>
+    </ol>
+    <div class="rules-divider"></div>
+    <a href="regolamento.html" class="ext-rules-link" target="_blank">Regolamento completo →</a>
+    <br><br>
+    <button class="rules-close" onclick="chiudiRegolamento()">Chiudi</button>
+  </div>
+</div>
 
-        function casuale(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
-        }
+<script>
+// ══════════════════════════════════════════
+//  SEEDED PRNG  (mulberry32)
+// ══════════════════════════════════════════
+function hashStr(s){
+  let h=0;
+  for(let i=0;i<s.length;i++){h=Math.imul(31,h)+s.charCodeAt(i)|0}
+  return h>>>0;
+}
+function makePRNG(seed){
+  let s=hashStr(String(seed));
+  return function(){
+    s+=0x6D2B79F5;
+    let t=Math.imul(s^s>>>15,1|s);
+    t^=t+Math.imul(t^t>>>7,61|t);
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
 
-        function genera() {
-            // Seme
-            const chiavi = Object.keys(semi);
-            const semeKey = casuale(chiavi);
-            const seme = semi[semeKey];
-            const prompt = casuale(seme.prompts);
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let rng, seedCorrente, numGiocatori=2;
+let cartaCorrente=0, maxCarte=0;
+let storia=[], primaVolta=true;
+let turnoIdx=0, ordineInizativa=[], incontroAttivo=false;
 
-            document.getElementById('label-seme').textContent = seme.nome;
-            document.getElementById('label-seme').className = 'card-label theme-' + semeKey;
-            document.getElementById('symbol-seme').textContent = seme.simbolo;
-            document.getElementById('testo-seme').textContent = prompt;
+// ══════════════════════════════════════════
+//  DATABASE
+// ══════════════════════════════════════════
+const semi={
+  spade:{nome:"Spade",simbolo:"⚔",prompts:[
+    "Qualcuno ha preso una decisione che riguarda tutti, senza consultare nessuno. Chi? Perché lo ha fatto da solo?",
+    "Una risorsa fondamentale comincia a scarseggiare. Come cambia il comportamento delle persone?",
+    "Due membri della comunità non si rivolgono più la parola. Cosa è successo tra loro?",
+    "Qualcuno vuole andarsene. Gli altri cercano di trattenerlo — o lo lasciano partire?",
+    "Viene scoperta una menzogna che circolava da tempo. Chi la stava raccontando, e perché?",
+    "Un accordo stipulato in passato deve essere onorato. Ma le circostanze sono cambiate.",
+    "Qualcuno è stato escluso da una decisione importante. Come reagisce?",
+    "Un vecchio confine — fisico o sociale — viene messo in discussione.",
+    "La paura di qualcosa che non si vede ancora comincia a cambiare le abitudini di tutti.",
+    "Una persona che sembrava indispensabile si rivela incapace. Cosa succede adesso?",
+    "Qualcuno pretende di avere più diritti degli altri su qualcosa. Su cosa basa la sua pretesa?",
+    "Un piano che sembrava solido mostra le prime crepe. Qualcuno se ne era accorto prima?",
+    "Si scopre che qualcuno ha accumulato risorse di nascosto. Come viene trattato?",
+    "Una parola detta nel momento sbagliato spacca in due un gruppo che sembrava unito.",
+    "Qualcuno deve lasciare il proprio posto — fisicamente o simbolicamente. È disposto a farlo?",
+    "Una decisione presa per il bene comune ha danneggiato qualcuno in modo particolare.",
+    "Emerge una vecchia rivalità che sembrava sopita. Cosa l'ha risvegliata?",
+    "Qualcuno chiede protezione. Offrirla ha un costo che non tutti sono disposti a pagare.",
+    "Un lavoro che tutti danno per scontato smette improvvisamente di essere fatto.",
+    "Qualcuno torna da un posto da cui non ci si aspettava di rivederlo. Porta notizie difficili."
+  ]},
+  bastoni:{nome:"Bastoni",simbolo:"🜂",prompts:[
+    "Un progetto collettivo prende forma. Chi lo guida? Chi si oppone?",
+    "Qualcuno propone di esplorare una zona che fino ad ora è stata evitata. Perché proprio adesso?",
+    "Arriva una notizia che richiede una risposta immediata. C'è tempo per discuterne?",
+    "Una piccola azione individuale ha conseguenze che coinvolgono tutti. Era prevedibile?",
+    "Si presenta l'occasione di ottenere qualcosa di importante — ma il rischio è reale.",
+    "Qualcuno ha iniziato qualcosa senza dirlo agli altri. Quando viene a galla, come si reagisce?",
+    "Un ostacolo che sembrava permanente si rivela superabile. Chi lo scopre, e come?",
+    "Un'energia nuova attraversa il gruppo. Da dove viene? Durerà?",
+    "Qualcuno prende l'iniziativa in un momento in cui nessuno sapeva cosa fare.",
+    "Un conflitto fisico è stato evitato per poco. La tensione però non è scomparsa.",
+    "Un gruppo più piccolo cerca di agire in modo indipendente. Il resto della comunità lo permette?",
+    "Una risorsa inaspettata viene trovata. Subito si apre il dibattito su come usarla.",
+    "Qualcuno compie un gesto che nessuno si aspettava. Cambia i rapporti di forza.",
+    "Si deve abbandonare un posto che si conosceva bene. Chi resta indietro per ultima?",
+    "Un lavoro urgente richiede che tutti mettano da parte le divergenze. Riescono a farlo?",
+    "Qualcuno torna con qualcosa di utile, ma anche con qualcosa di preoccupante.",
+    "Il piano viene eseguito. Ma le cose non vanno esattamente come previsto.",
+    "Una disputa degenera al punto che qualcuno si fa del male — non era nelle intenzioni di nessuno.",
+    "Qualcuno sfida apertamente l'autorità o la gerarchia informale del gruppo.",
+    "Una spedizione di ricognizione rivela qualcosa che cambia le priorità."
+  ]},
+  pentacoli:{nome:"Pentacoli",simbolo:"⛤",prompts:[
+    "Un lavoro lungo e silenzioso porta finalmente i suoi frutti. Chi lo aveva portato avanti?",
+    "Qualcosa che sembrava perduto ricompare. Come cambia la situazione?",
+    "Un membro della comunità dimostra una competenza che nessuno sapeva avesse.",
+    "Si trova un modo per fare di più con meno. L'idea è di qualcuno che di solito non parla.",
+    "Una stagione di abbondanza relativa porta con sé nuove domande: come conservare, come distribuire.",
+    "Qualcuno si prende cura di un altro in modo silenzioso e costante. Viene notato.",
+    "Un progetto che sembrava impossibile avanza grazie alla collaborazione inaspettata di due persone.",
+    "Una risorsa viene condivisa per la prima volta con qualcuno che era stato escluso.",
+    "Qualcuno fa un inventario accurato di ciò che si possiede. I risultati sorprendono tutti.",
+    "Un piccolo miglioramento nelle condizioni quotidiane cambia l'umore generale.",
+    "Qualcuno insegna qualcosa a qualcun altro. L'apprendistato diventa qualcos'altro.",
+    "Viene trovato un modo per risolvere una scarsità cronica. Richiede però un sacrificio.",
+    "Un luogo trascurato viene rimesso in uso. Chi lo aveva abbandonato, e perché?",
+    "Un dono arriva da una direzione inaspettata. Cosa implica accettarlo?",
+    "Una routine quotidiana si rivela più importante di quanto sembrava.",
+    "Qualcuno produce qualcosa con le proprie mani che tutti potrebbero usare.",
+    "Un accordo commerciale o di scambio porta stabilità — almeno per ora.",
+    "Un membro anziano del gruppo trasmette una conoscenza che rischiava di andare perduta.",
+    "Il lavoro di una settimana intera viene distrutto da un evento imprevisto. Come si ricomincia?",
+    "Una piccola celebrazione ricorda a tutti perché vale la pena continuare."
+  ]},
+  coppe:{nome:"Coppe",simbolo:"🜄",prompts:[
+    "Una storia del passato viene raccontata di nuovo. Questa volta, qualcuno la sente diversamente.",
+    "Due persone che si evitavano si trovano a condividere uno spazio. Come va a finire?",
+    "Qualcuno esprime un rimpianto che non aveva mai detto ad alta voce. Gli altri come reagiscono?",
+    "Una tradizione viene messa in discussione. Vale ancora la pena mantenerla?",
+    "Un momento di festa collettiva rivela tensioni che di solito restano sotto la superficie.",
+    "Qualcuno confida qualcosa di personale a qualcun altro. Ci si può fidare?",
+    "Una perdita condivisa crea un legame inaspettato tra persone che non si conoscevano bene.",
+    "Qualcuno imita inconsapevolmente qualcun altro. Chi? Cosa significa?",
+    "Un vecchio simbolo o rituale viene riscoperto. Alcuni lo trovano confortante, altri lo trovano vuoto.",
+    "Una conversazione iniziata come banale si trasforma in qualcosa di importante.",
+    "Il ricordo di come erano le cose prima divide il gruppo tra chi vuole tornare e chi vuole andare avanti.",
+    "Qualcuno fa ridere tutti in un momento difficile. Non tutti sono grati.",
+    "Una promessa fatta tempo fa torna a fare pressione. Quanto vale ancora?",
+    "Qualcuno si prende del tempo per sé. Gli altri lo giudicano, lo invidiano o lo capiscono?",
+    "Due versioni della stessa storia circolano nel gruppo. Quale è quella vera?",
+    "Un gesto di cura non viene ricambiato. Chi ne soffre di più?",
+    "Qualcuno esprime gratitudine in pubblico. L'atmosfera cambia, in bene o in male.",
+    "Una lite si risolve in modo inaspettato. Ma qualcosa è rimasto irrisolto.",
+    "Qualcuno piange di nascosto. Un altro se ne accorge e non sa cosa fare.",
+    "Una piccola ingiustizia viene tollerata per non creare conflitti. Fino a quando?"
+  ]},
+  stella:{nome:"Stella",simbolo:"★",prompts:[
+    "Una presenza ostile si avvicina. Non si sa ancora quanti sono, né cosa vogliono.",
+    "Qualcosa si muove ai margini della mappa. Avete poco tempo per prepararvi.",
+    "Un avvertimento arriva troppo tardi. L'incontro è inevitabile — scegliete come affrontarlo."
+  ]}
+};
 
-            // Luogo
-            const luogo = casuale(luoghi);
-            document.getElementById('testo-luogo').textContent = luogo;
+const luoghi=[
+  "Un fiume segna il confine tra due aree che la comunità usa in modo diverso.",
+  "Una strada abbandonata attraversa la zona — un tempo era la via principale.",
+  "C'è una costruzione incompiuta al centro della mappa. Non si sa se riprenderla o lasciarla.",
+  "Una zona della mappa è sempre evitata, senza che nessuno spieghi bene perché.",
+  "Il terreno cambia bruscamente in un punto preciso. Cosa c'era lì prima?",
+  "Un vecchio muro divide lo spazio in due. Da un lato e dall'altro le abitudini sono diverse.",
+  "C'è un'area che si allaga periodicamente. Nei periodi secchi la gente ci va lo stesso.",
+  "Una collina domina il paesaggio. Chi la controlla ha vantaggio visivo su tutti.",
+  "Un bosco fitto occupa un angolo della mappa. Ci si entra raramente e mai da soli.",
+  "Una torre o una struttura alta è visibile da lontano. È ancora agibile?",
+  "Un crocevia mal segnalato genera spesso incomprensioni su chi ha diritto di passare.",
+  "Le rovine di qualcosa di grande occupano il centro della zona. Cosa era?",
+  "C'è una fonte d'acqua contesa. Due gruppi la usano e non sempre si accordano.",
+  "Un passaggio stretto è l'unico accesso a una zona ricca di risorse.",
+  "Una zona aperta senza riparo divide due aree più sicure. Attraversarla ha un costo.",
+  "Un insediamento abbandonato conserva ancora strutture utilizzabili.",
+  "Il terreno è instabile in certi punti — non tutti lo sanno.",
+  "Una recinzione segnava confini privati che ora non hanno più senso.",
+  "Ci sono tracce di scavi recenti in una zona che sembrava intatta.",
+  "Una via d'acqua artificiale — un canale, un fossato — attraversa la zona.",
+  "C'è un luogo sopraelevato che funge da punto di riferimento per tutti.",
+  "Un campo aperto un tempo coltivato ora è lasciato andare. Si potrebbe recuperare.",
+  "Una struttura sotterranea — cantina, bunker, rifugio — è nota ma poco esplorata.",
+  "Ci sono due ingressi alla zona. Uno è facile, l'altro è difficile ma più sicuro.",
+  "Una linea ferroviaria dismessa attraversa la mappa. I binari sono ancora percorribili a piedi.",
+  "Un edificio è stato usato da molti per scopi diversi nel tempo. Quali tracce restano?",
+  "C'è un confine naturale — un dirupo, un fiume, una fitta vegetazione — che separa due aree.",
+  "Un punto d'ombra naturale attira le persone nelle ore calde. Diventa un luogo di conversazione.",
+  "Una zona è nominalmente di tutti ma nella pratica nessuno la mantiene.",
+  "Ci sono segni che qualcuno ha vissuto in questo posto prima di voi. Non molto tempo fa."
+];
 
-            // Animazione flash sulle card
-            ['card-seme', 'card-luogo'].forEach(id => {
-                const el = document.getElementById(id);
-                el.style.transition = 'opacity 0.15s';
-                el.style.opacity = '0.3';
-                setTimeout(() => { el.style.opacity = '1'; }, 150);
-            });
-        }
+// ══════════════════════════════════════════
+//  INCONTRI SCALABILI
+// ══════════════════════════════════════════
+const incontriDef=[
+  {
+    id:"lupi",label:"Lupi",
+    colore:"#e0a060",
+    descr:n=>`${n*3} lupi affamati si avvicinano dal bosco. Si muovono in gruppo e puntano al bersaglio isolato.`,
+    num:n=>n*3
+  },
+  {
+    id:"banditi",label:"Banditi",
+    colore:"#c05050",
+    descr:n=>`${n*2} banditi armati emergono dall'ombra. Conoscono il terreno meglio di voi.`,
+    num:n=>n*2
+  },
+  {
+    id:"mago",label:"Il Mago",
+    colore:"#9b6fd4",
+    descr:n=>`Un mago ostile avanza lentamente${n>1?`, con ${n} familiari al seguito`:''}. Non sembra avere fretta.`,
+    num:n=>n
+  },
+  {
+    id:"guardie",label:"Guardie",
+    colore:"#5080c0",
+    descr:n=>`${n*2} guardie in armatura bloccano il passaggio. Hanno ordini precisi e li seguiranno.`,
+    num:n=>n*2
+  },
+  {
+    id:"creature",label:"Creature",
+    colore:"#60a060",
+    descr:n=>`${Math.ceil(n*1.5)} creature sconosciute emergono dal sottosuolo. Il loro comportamento è imprevedibile.`,
+    num:n=>Math.ceil(n*1.5)
+  }
+];
 
-        // Prima generazione all'avvio
-        genera();
-    </script>
+// ══════════════════════════════════════════
+//  SETUP & SEED
+// ══════════════════════════════════════════
+function aggiornaSlider(){
+  numGiocatori=parseInt(document.getElementById('slider-players').value);
+  document.getElementById('player-count').textContent=numGiocatori;
+}
+
+function nuovoSeed(){
+  const s=Math.random().toString(36).substring(2,8).toUpperCase();
+  document.getElementById('seed-input').value=s;
+  seedCorrente=s;
+}
+
+function usaSeed(){
+  const v=document.getElementById('seed-input').value.trim();
+  if(v) seedCorrente=v;
+}
+
+function iniziaPartita(){
+  usaSeed();
+  if(!seedCorrente){nuovoSeed()}
+  rng=makePRNG(seedCorrente);
+  document.getElementById('seed-input').value=seedCorrente;
+  maxCarte=numGiocatori*10;
+  cartaCorrente=0;
+  storia=[];
+  // Pre-genera tutte le estrazioni
+  for(let i=0;i<maxCarte;i++){
+    const isStellaRoll=rng()<0.15;
+    const chiavi=['spade','bastoni','pentacoli','coppe'];
+    const semeKey=isStellaRoll?'stella':chiavi[Math.floor(rng()*chiavi.length)];
+    const seme=semi[semeKey];
+    const pIdx=Math.floor(rng()*seme.prompts.length);
+    const lIdx=Math.floor(rng()*luoghi.length);
+    storia.push({semeKey,pIdx,lIdx});
+  }
+  // Setup progress bar
+  const pb=document.getElementById('progress-bar');
+  pb.style.display='block';
+  const pi=document.getElementById('progress-inner');
+  pi.innerHTML='';
+  for(let i=0;i<maxCarte;i++){
+    const d=document.createElement('div');
+    d.className='prog-pip';
+    d.id='pip-'+i;
+    d.textContent=i+1;
+    pi.appendChild(d);
+  }
+  // Nascondi setup
+  document.getElementById('setup-panel').style.opacity='.4';
+  document.getElementById('setup-panel').style.pointerEvents='none';
+}
+
+// ══════════════════════════════════════════
+//  GENERAZIONE CARTA
+// ══════════════════════════════════════════
+function genera(){
+  if(!rng) iniziaPartita();
+  if(cartaCorrente>=maxCarte){finePartita();return}
+
+  const entry=storia[cartaCorrente];
+  const {semeKey,pIdx,lIdx}=entry;
+  const seme=semi[semeKey];
+  const prompt=seme.prompts[pIdx];
+  const luogo=luoghi[lIdx];
+  const numCarta=cartaCorrente+1;
+
+  // Aggiorna carte
+  document.getElementById('label-seme').textContent=seme.nome;
+  document.getElementById('label-seme').className='card-label theme-'+semeKey;
+  document.getElementById('symbol-seme').textContent=seme.simbolo;
+  document.getElementById('testo-seme').textContent=prompt;
+  document.getElementById('testo-luogo').textContent=luogo;
+  document.getElementById('num-seme').textContent=numCarta;
+  document.getElementById('num-luogo').textContent=numCarta;
+
+  // Stella card width
+  const cs=document.getElementById('card-seme');
+  semeKey==='stella'?cs.classList.add('stella-card'):cs.classList.remove('stella-card');
+
+  // Progress pip
+  const pip=document.getElementById('pip-'+(cartaCorrente));
+  if(pip){
+    pip.classList.add(semeKey==='stella'?'stella-pip':'done');
+  }
+  document.getElementById('prog-label').textContent=`Carta ${numCarta} / ${maxCarte}`;
+
+  // Animazione fade
+  ['card-luogo','card-seme'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(primaVolta){
+      setTimeout(()=>el.classList.add('visible'),i*120);
+    } else {
+      el.style.opacity='.15';
+      setTimeout(()=>{el.style.opacity='1'},180);
+    }
+  });
+
+  if(primaVolta){
+    document.getElementById('footer-note').textContent='ogni estrazione è unica · seed: '+seedCorrente;
+    primaVolta=false;
+  }
+
+  // Sezione Stella
+  const stellaSec=document.getElementById('stella-section');
+  incontroAttivo=false;
+  document.getElementById('btn-passo').style.display='none';
+  document.getElementById('turn-indicator').textContent='';
+
+  if(semeKey==='stella'){
+    // Scegli incontro con rng (già consumato sopra, uso hash della carta)
+    const incIdx=Math.floor((entry.pIdx+entry.lIdx)%incontriDef.length);
+    const incDef=incontriDef[incIdx];
+    stellaSec.style.display='block';
+    setTimeout(()=>{
+      stellaSec.classList.add('visible');
+      generaIncontro(incDef);
+      setTimeout(()=>stellaSec.scrollIntoView({behavior:'smooth',block:'start'}),300);
+    },80);
+  } else {
+    stellaSec.classList.remove('visible');
+    setTimeout(()=>{stellaSec.style.display='none'},600);
+  }
+
+  avviaMusica(semeKey);
+  cartaCorrente++;
+
+  // Disabilita se ultima carta
+  if(cartaCorrente>=maxCarte){
+    document.getElementById('btn-oracle').textContent='✦ Fine Partita ✦';
+  }
+}
+
+// ══════════════════════════════════════════
+//  INCONTRO & INIZIATIVA
+// ══════════════════════════════════════════
+function generaIncontro(incDef){
+  const n=numGiocatori;
+  const numNemici=incDef.num(n);
+
+  // Costruisce lista combattenti
+  const combattenti=[];
+  for(let i=1;i<=n;i++) combattenti.push({nome:`Personaggio ${i}`,tipo:'pg',idx:i});
+  for(let i=1;i<=numNemici;i++) combattenti.push({nome:`${incDef.label} ${numNemici>1?i:''}`.trim(),tipo:'png',colore:incDef.colore,idx:i});
+
+  // Shuffle iniziativa con rng (deterministico per seed)
+  for(let i=combattenti.length-1;i>0;i--){
+    const j=Math.floor(rng()*(i+1));
+    [combattenti[i],combattenti[j]]=[combattenti[j],combattenti[i]];
+  }
+  ordineInizativa=combattenti;
+  turnoIdx=0;
+  incontroAttivo=true;
+
+  // Render lista iniziativa
+  const ul=document.getElementById('initiative-list');
+  ul.innerHTML='';
+  combattenti.forEach((c,i)=>{
+    const li=document.createElement('li');
+    li.id='init-'+i;
+    li.innerHTML=`<span class="init-num">${i+1}</span><span>${c.nome}</span>`;
+    if(i===0) li.classList.add('active-turn');
+    ul.appendChild(li);
+  });
+
+  // Mappa
+  disegnaMappa(incDef,numNemici);
+
+  // Legenda
+  const leg=document.getElementById('map-legend');
+  leg.innerHTML='';
+  [
+    {colore:'#c9a84c',label:`${n} personaggi`},
+    {colore:incDef.colore,label:`${numNemici} ${incDef.label}`}
+  ].forEach(({colore,label})=>{
+    const d=document.createElement('div'); d.className='legend-item';
+    d.innerHTML=`<div class="legend-dot" style="background:${colore}"></div><span>${label}</span>`;
+    leg.appendChild(d);
+  });
+
+  // Box PNG
+  aggiornaBoxPNG();
+
+  // Mostra passo
+  document.getElementById('btn-passo').style.display='block';
+  aggiornaIndicatoreTurno();
+}
+
+function passaTurno(){
+  if(!incontroAttivo||ordineInizativa.length===0) return;
+  // Rimuovi active dal precedente
+  const prevLi=document.getElementById('init-'+turnoIdx);
+  if(prevLi) prevLi.classList.remove('active-turn');
+
+  turnoIdx=(turnoIdx+1)%ordineInizativa.length;
+
+  const nextLi=document.getElementById('init-'+turnoIdx);
+  if(nextLi){nextLi.classList.add('active-turn');nextLi.scrollIntoView({behavior:'smooth',block:'nearest'})}
+
+  aggiornaBoxPNG();
+  aggiornaIndicatoreTurno();
+}
+
+function aggiornaIndicatoreTurno(){
+  if(!incontroAttivo||ordineInizativa.length===0) return;
+  const c=ordineInizativa[turnoIdx];
+  document.getElementById('turn-indicator').textContent=
+    `Turno di: ${c.nome}`;
+}
+
+function aggiornaBoxPNG(){
+  if(!incontroAttivo||ordineInizativa.length===0) return;
+  const c=ordineInizativa[turnoIdx];
+  const box=document.getElementById('png-action-text');
+  if(c.tipo==='pg'){
+    box.textContent=`Tocca a ${c.nome}. Descrivi la sua azione.`;
+  } else {
+    // Logica PNG semplificata dal flowchart
+    box.textContent=calcolaAzionePNG(c);
+  }
+}
+
+function calcolaAzionePNG(png){
+  // Seleziona bersagli PG disponibili
+  const pg=ordineInizativa.filter(x=>x.tipo==='pg');
+  if(pg.length===0) return `${png.nome} non trova bersagli validi.`;
+
+  // Bersaglio casuale tra i PG (deterministico dal turno)
+  const bIdx=Math.floor(rng()*pg.length);
+  const bersaglio=pg[bIdx].nome;
+
+  // Flowchart semplificato:
+  // 1. Regole speciali? (mago sì, altri no)
+  if(png.nome.toLowerCase().includes('mago')){
+    const magie=["lancia una palla di fuoco","evoca un campo di forza","usa un incantesimo di rallentamento","proietta un'illusione confondente"];
+    const m=magie[Math.floor(rng()*magie.length)];
+    return `${png.nome} ${m} su ${bersaglio}.`;
+  }
+  // 2. Corpo a corpo — attacca il bersaglio più vicino
+  const azioni=["attacca","carica","colpisce","si lancia contro"];
+  const a=azioni[Math.floor(rng()*azioni.length)];
+  if(pg.length>1){
+    return `${png.nome} ${a} ${bersaglio} (bersaglio scelto casualmente tra ${pg.length} disponibili).`;
+  }
+  return `${png.nome} ${a} ${bersaglio}.`;
+}
+
+// ══════════════════════════════════════════
+//  MAPPA PROCEDURALE
+// ══════════════════════════════════════════
+function rndR(min,max){return Math.floor(rng()*(max-min+1))+min}
+
+function disegnaMappa(incDef,numNemici){
+  const canvas=document.getElementById('mappa');
+  const container=canvas.parentElement;
+  const cssW=Math.max(260,container.clientWidth-40);
+  const ratio=window.devicePixelRatio||1;
+  const W=cssW, H=Math.round(W*0.6);
+  canvas.width=W*ratio; canvas.height=H*ratio;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(ratio,ratio);
+
+  // Sfondo
+  ctx.fillStyle='#0d0c10'; ctx.fillRect(0,0,W,H);
+
+  // Griglia sottile
+  ctx.strokeStyle='rgba(255,255,255,.03)'; ctx.lineWidth=1;
+  const g=40;
+  for(let x=0;x<=W;x+=g){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  for(let y=0;y<=H;y+=g){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+
+  // Zona verde centrale
+  ctx.fillStyle='rgba(40,55,35,.3)';
+  ctx.beginPath();
+  ctx.ellipse(W*.5,H*.5,rndR(120,180),rndR(80,130),rng()*0.5,0,Math.PI*2);
+  ctx.fill();
+
+  const occupate=[];
+
+  // Edifici
+  for(let i=0;i<rndR(2,4);i++){
+    let x,y,w,h,t=0;
+    do{w=rndR(50,100);h=rndR(35,70);x=rndR(25,W-w-25);y=rndR(25,H-h-25);t++}
+    while(t<20&&occupate.some(z=>x<z.x+z.w+18&&x+w>z.x-18&&y<z.y+z.h+18&&y+h>z.y-18));
+    occupate.push({x,y,w,h});
+    ctx.fillStyle='rgba(80,70,60,.45)'; ctx.fillRect(x,y,w,h);
+    ctx.strokeStyle='rgba(160,140,100,.55)'; ctx.lineWidth=1.5; ctx.strokeRect(x,y,w,h);
+    // Porta
+    ctx.strokeStyle='rgba(200,170,100,.85)'; ctx.lineWidth=3;
+    const lato=rndR(0,3);
+    if(lato===0){ctx.beginPath();ctx.moveTo(x+w/2-7,y);ctx.lineTo(x+w/2+7,y);ctx.stroke()}
+    else if(lato===1){ctx.beginPath();ctx.moveTo(x+w,y+h/2-7);ctx.lineTo(x+w,y+h/2+7);ctx.stroke()}
+    else if(lato===2){ctx.beginPath();ctx.moveTo(x+w/2-7,y+h);ctx.lineTo(x+w/2+7,y+h);ctx.stroke()}
+    else{ctx.beginPath();ctx.moveTo(x,y+h/2-7);ctx.lineTo(x,y+h/2+7);ctx.stroke()}
+  }
+
+  // Alberi
+  for(let i=0;i<rndR(5,10);i++){
+    let tx,ty,t=0;
+    do{tx=rndR(18,W-18);ty=rndR(18,H-18);t++}
+    while(t<15&&occupate.some(z=>tx>z.x-14&&tx<z.x+z.w+14&&ty>z.y-14&&ty<z.y+z.h+14));
+    const r=rndR(7,14);
+    ctx.fillStyle='rgba(28,68,28,.7)'; ctx.beginPath(); ctx.arc(tx,ty,r,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(45,90,35,.5)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle='rgba(80,55,30,.8)'; ctx.beginPath(); ctx.arc(tx,ty,3,0,Math.PI*2); ctx.fill();
+  }
+
+  // Rocce
+  for(let i=0;i<rndR(3,5);i++){
+    const rx=rndR(18,W-18),ry=rndR(18,H-18),sides=rndR(5,8),rb=rndR(9,20);
+    ctx.fillStyle='rgba(88,83,78,.55)'; ctx.strokeStyle='rgba(128,118,108,.4)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    for(let s=0;s<sides;s++){
+      const angle=(s/sides)*Math.PI*2,rad=rb+rndR(-5,5);
+      const px=rx+Math.cos(angle)*rad,py=ry+Math.sin(angle)*rad;
+      s===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    }
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+
+  // Acqua (50%)
+  if(rng()>.5){
+    ctx.fillStyle='rgba(18,48,88,.4)'; ctx.strokeStyle='rgba(35,75,135,.4)'; ctx.lineWidth=1.5;
+    const wx=rndR(0,W-100),wy=rndR(0,H-70);
+    ctx.beginPath();
+    ctx.moveTo(wx+rndR(0,30),wy);
+    ctx.bezierCurveTo(wx+rndR(25,70),wy+rndR(-15,15),wx+rndR(70,110),wy+rndR(-8,25),wx+rndR(90,130),wy+rndR(8,35));
+    ctx.bezierCurveTo(wx+rndR(70,120),wy+rndR(35,70),wx+rndR(15,65),wy+rndR(42,80),wx+rndR(0,35),wy+rndR(35,62));
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+
+  // Nemici
+  const posNemici=[];
+  for(let ni=0;ni<numNemici;ni++){
+    let nx,ny,t=0;
+    do{nx=rndR(35,W-35);ny=rndR(35,H-100);t++}
+    while(t<40&&(
+      occupate.some(z=>nx>z.x-22&&nx<z.x+z.w+22&&ny>z.y-22&&ny<z.y+z.h+22)||
+      posNemici.some(p=>Math.hypot(nx-p.x,ny-p.y)<28)
+    ));
+    posNemici.push({x:nx,y:ny});
+    ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(nx+3,ny+5,10,6,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=incDef.colore; ctx.beginPath(); ctx.arc(nx,ny,11,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(incDef.label[0],nx,ny);
+  }
+
+  // Personaggi (fila in basso)
+  const spacing=Math.min(50,(W-60)/Math.max(numGiocatori,1));
+  const startX=W/2-(numGiocatori-1)*spacing/2;
+  for(let pi=0;pi<numGiocatori;pi++){
+    const px=startX+pi*spacing, py=H-40;
+    ctx.strokeStyle='#c9a84c'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(px-11,py); ctx.lineTo(px+11,py); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px,py-11); ctx.lineTo(px,py+11); ctx.stroke();
+    ctx.fillStyle='rgba(201,168,76,.18)'; ctx.beginPath(); ctx.arc(px,py,13,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(201,168,76,.45)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(px,py,13,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle='rgba(201,168,76,.8)'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('P'+(pi+1),px,py);
+  }
+}
+
+// ══════════════════════════════════════════
+//  FINE PARTITA
+// ══════════════════════════════════════════
+function finePartita(){
+  document.getElementById('btn-oracle').disabled=true;
+  const es=document.getElementById('end-screen');
+  es.style.display='block';
+  setTimeout(()=>es.classList.add('visible'),50);
+  document.getElementById('end-seed-display').textContent=
+    `Seed partita: ${seedCorrente} · ${numGiocatori} personaggi · ${maxCarte} carte`;
+  es.scrollIntoView({behavior:'smooth',block:'start'});
+  stopMusica();
+}
+
+function riavvia(){
+  // Reset stato
+  rng=null; seedCorrente=null; cartaCorrente=0; maxCarte=0;
+  storia=[]; primaVolta=true; turnoIdx=0; ordineInizativa=[]; incontroAttivo=false;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('end-screen').classList.remove('visible');
+  document.getElementById('btn-oracle').disabled=false;
+  document.getElementById('btn-oracle').textContent='✦ Nuovo Oracolo ✦';
+  document.getElementById('progress-bar').style.display='none';
+  document.getElementById('footer-note').textContent='premi per iniziare';
+  document.getElementById('setup-panel').style.opacity='1';
+  document.getElementById('setup-panel').style.pointerEvents='auto';
+  document.getElementById('seed-input').value='';
+  document.getElementById('btn-passo').style.display='none';
+  document.getElementById('turn-indicator').textContent='';
+  ['card-luogo','card-seme'].forEach(id=>document.getElementById(id).classList.remove('visible'));
+  const ss=document.getElementById('stella-section');
+  ss.classList.remove('visible'); ss.style.display='none';
+  stopMusica();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════
+//  WEB AUDIO
+// ══════════════════════════════════════════
+let audioCtx=null,musicaAttiva=false,nodi=[],semeCorrente=null;
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx}
+function stopMusica(){nodi.forEach(n=>{try{n.stop()}catch(e){}});nodi=[];musicaAttiva=false;aggiornaIndicatore()}
+function aggiornaIndicatore(){const ind=document.getElementById('music-indicator');musicaAttiva?ind.classList.add('playing'):ind.classList.remove('playing')}
+function toggleMusica(){if(musicaAttiva){stopMusica()}else if(semeCorrente){avviaMusica(semeCorrente)}}
+function makeOsc(ctx,type,freq,gain){const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(gain,ctx.currentTime+2.5);o.connect(g);g.connect(ctx.destination);o.start();nodi.push(o);return{osc:o,gain:g}}
+function makeNoise(ctx,gainVal,ff,ft='lowpass'){const buf=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const src=ctx.createBufferSource(),filt=ctx.createBiquadFilter(),g=ctx.createGain();src.buffer=buf;src.loop=true;filt.type=ft;filt.frequency.value=ff;g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(gainVal,ctx.currentTime+3);src.connect(filt);filt.connect(g);g.connect(ctx.destination);src.start();nodi.push(src);return{src,gain:g}}
+function makeLFO(ctx,tg,rate,depth,base){const l=ctx.createOscillator(),lg=ctx.createGain();l.frequency.value=rate;lg.gain.value=depth;l.connect(lg);lg.connect(tg.gain);tg.gain.value=base;l.start();nodi.push(l)}
+function avviaMusica(seme){
+  stopMusica();const ctx=getCtx();if(ctx.state==='suspended')ctx.resume();
+  musicaAttiva=true;semeCorrente=seme;
+  if(seme==='spade'){makeOsc(ctx,'sawtooth',55,.04);makeOsc(ctx,'sawtooth',55.3,.03);makeOsc(ctx,'sine',110,.025);makeNoise(ctx,.018,400,'bandpass');const d=makeOsc(ctx,'sine',82.4,.02);makeLFO(ctx,d.gain,.3,.01,.02)}
+  else if(seme==='bastoni'){makeOsc(ctx,'square',110,.03);makeOsc(ctx,'square',111,.02);makeNoise(ctx,.04,800,'highpass');const pO=ctx.createOscillator(),pG=ctx.createGain();pO.type='sine';pO.frequency.value=55;pG.gain.value=0;pO.connect(pG);pG.connect(ctx.destination);pO.start();nodi.push(pO);for(let i=0;i<120;i++){pG.gain.setValueAtTime(.06,ctx.currentTime+i*.5);pG.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+i*.5+.35)}}
+  else if(seme==='pentacoli'){const r=174.6;makeOsc(ctx,'sine',r,.04);makeOsc(ctx,'sine',r*1.5,.025);makeOsc(ctx,'sine',r*2,.018);makeNoise(ctx,.008,1200,'lowpass')}
+  else if(seme==='coppe'){makeOsc(ctx,'sine',130.8,.035);makeOsc(ctx,'sine',196,.025);makeOsc(ctx,'sine',261.6,.018);makeNoise(ctx,.012,600,'lowpass');const w=makeOsc(ctx,'sine',130.8,.03);makeLFO(ctx,w.gain,.08,.012,.03)}
+  else if(seme==='stella'){makeOsc(ctx,'sawtooth',73.4,.025);makeOsc(ctx,'sawtooth',110,.02);makeNoise(ctx,.02,300,'bandpass');makeNoise(ctx,.01,1000,'highpass');const t=makeOsc(ctx,'triangle',55,.03);makeLFO(ctx,t.gain,.4,.015,.025)}
+  aggiornaIndicatore();document.getElementById('music-indicator').classList.add('visible');
+}
+
+// ══════════════════════════════════════════
+//  REGOLAMENTO
+// ══════════════════════════════════════════
+function apriRegolamento(){document.getElementById('overlay').classList.add('active')}
+function chiudiRegolamento(){document.getElementById('overlay').classList.remove('active')}
+function chiudiSeFuori(e){if(e.target===document.getElementById('overlay'))chiudiRegolamento()}
+
+// Init slider
+aggiornaSlider();
+</script>
 </body>
-</html>
+    </html>
