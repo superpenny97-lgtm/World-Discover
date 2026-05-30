@@ -184,7 +184,34 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── LINK REGOLAMENTO ESTESO ── */
+/* PF nella lista iniziativa */
+.init-pf{font-size:.65rem;margin-left:auto;color:var(--dim);letter-spacing:1px;font-style:normal;white-space:nowrap}
+.init-pf.low{color:#c05050}
+
+/* Controlli movimento PG */
+.movement-controls{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.movement-title{font-family:'Cinzel Decorative',serif;font-size:.6rem;color:var(--gold);letter-spacing:2px;opacity:.6;margin-bottom:4px}
+.move-select{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;justify-content:center}
+.move-select label{font-size:.72rem;color:var(--dim);letter-spacing:1px}
+.move-select select{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);
+  color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:.8rem;
+  padding:3px 8px;border-radius:2px;outline:none;cursor:pointer}
+.dpad{display:grid;grid-template-columns:repeat(3,32px);grid-template-rows:repeat(3,32px);gap:3px}
+.dpad-btn{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);
+  color:rgba(201,168,76,.6);font-size:.9rem;cursor:pointer;border-radius:2px;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.dpad-btn:hover,.dpad-btn:active{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.4);color:var(--gold)}
+.dpad-btn.empty{background:none;border:none;pointer-events:none}
+
+/* Box effetti creature */
+.creature-effects-box{margin-top:12px;background:rgba(123,94,167,.05);
+  border:1px solid rgba(123,94,167,.18);border-radius:3px;padding:14px 18px}
+.creature-effects-title{font-family:'Cinzel Decorative',serif;font-size:.6rem;
+  color:#a98fd4;letter-spacing:3px;display:block;margin-bottom:10px;opacity:.7}
+.effect-item{margin-bottom:8px;font-size:.88rem;line-height:1.5;color:var(--cream);font-weight:300}
+.effect-item:last-child{margin-bottom:0}
+.effect-name{font-style:italic;color:rgba(201,168,76,.8);margin-right:4px}
 .ext-rules-link{display:inline-block;margin-top:16px;font-size:.7rem;letter-spacing:2px;
   text-transform:uppercase;color:rgba(201,168,76,.3);text-decoration:none;border-bottom:1px solid rgba(201,168,76,.12);
   padding-bottom:1px;transition:all .25s;font-style:normal}
@@ -263,16 +290,40 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 <div class="stella-section" id="stella-section">
   <div class="stella-divider"><span>✦ Incontro ✦</span></div>
   <div style="display:flex;gap:16px;flex-wrap:wrap">
-    <!-- Iniziativa (colonna destra) -->
+    <!-- Iniziativa (colonna sinistra) -->
     <div class="initiative-box" id="initiative-box" style="flex:0 0 200px;min-width:160px">
       <span class="initiative-title">Iniziativa</span>
       <ol class="initiative-list" id="initiative-list"></ol>
+      <!-- Controlli movimento PG -->
+      <div class="movement-controls" id="movement-controls" style="display:none">
+        <span class="movement-title">Muovi Personaggio</span>
+        <div class="move-select">
+          <label>PG</label>
+          <select id="pg-select"></select>
+        </div>
+        <div class="dpad">
+          <div class="dpad-btn empty"></div>
+          <button class="dpad-btn" onclick="muoviPG('su')" title="Su">▲</button>
+          <div class="dpad-btn empty"></div>
+          <button class="dpad-btn" onclick="muoviPG('sx')" title="Sinistra">◀</button>
+          <div class="dpad-btn empty"></div>
+          <button class="dpad-btn" onclick="muoviPG('dx')" title="Destra">▶</button>
+          <div class="dpad-btn empty"></div>
+          <button class="dpad-btn" onclick="muoviPG('giu')" title="Giù">▼</button>
+          <div class="dpad-btn empty"></div>
+        </div>
+      </div>
     </div>
     <!-- Mappa -->
     <div class="map-container" style="flex:1;min-width:240px">
       <canvas id="mappa" width="800" height="480"></canvas>
       <div class="map-legend" id="map-legend"></div>
     </div>
+  </div>
+  <!-- Box effetti creature -->
+  <div class="creature-effects-box" id="creature-effects-box" style="display:none">
+    <span class="creature-effects-title">Effetti Creature</span>
+    <div id="creature-effects-content"></div>
   </div>
   <!-- Box PNG -->
   <div class="png-action-box" id="png-action-box">
@@ -297,7 +348,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 </button>
 
 <!-- REGOLAMENTO OVERLAY -->
-<button class="rules-link" onclick="apriRegolamento()">Regolamento</button>
+<button class="rules-link" onclick="apriRegolamento()" style="font-size:.85rem;letter-spacing:3px;color:rgba(201,168,76,.65);border-bottom-color:rgba(201,168,76,.3);padding-bottom:3px;">Regolamento</button>
 <div class="overlay" id="overlay" onclick="chiudiSeFuori(event)">
   <div class="rules-card">
     <span class="rules-title">Regolamento</span>
@@ -352,6 +403,9 @@ let rng, seedCorrente, numGiocatori=2;
 let cartaCorrente=0, maxCarte=0;
 let storia=[], primaVolta=true;
 let turnoIdx=0, ordineInizativa=[], incontroAttivo=false;
+// Stato mappa dinamica
+let posPG=[], posNemici=[], pfPG=[], pfNemici=[], incDefCorrente=null, mapW=0, mapH=0, mapRatio=1;
+let mapOccupate=[];
 
 // ══════════════════════════════════════════
 //  DATABASE
@@ -488,36 +542,38 @@ const luoghi=[
 // ══════════════════════════════════════════
 //  INCONTRI SCALABILI
 // ══════════════════════════════════════════
+const PF_PG=10;
 const incontriDef=[
   {
-    id:"lupi",label:"Lupi",
-    colore:"#e0a060",
+    id:"lupi",label:"Lupo",labelPlural:"Lupi",colore:"#e0a060",pfBase:6,
     descr:n=>`${n*3} lupi affamati si avvicinano dal bosco. Si muovono in gruppo e puntano al bersaglio isolato.`,
-    num:n=>n*3
+    num:n=>n*3,
+    effetti:[{nome:"Veloce",desc:"I lupi si muovono di 10 metri invece di 5."}]
   },
   {
-    id:"banditi",label:"Banditi",
-    colore:"#c05050",
+    id:"banditi",label:"Bandito",labelPlural:"Banditi",colore:"#c05050",pfBase:7,
     descr:n=>`${n*2} banditi armati emergono dall'ombra. Conoscono il terreno meglio di voi.`,
-    num:n=>n*2
+    num:n=>n*2,
+    effetti:[{nome:"Tagliagole",desc:"I banditi attaccano con Fisico +1."}]
   },
   {
-    id:"mago",label:"Il Mago",
-    colore:"#9b6fd4",
+    id:"mago",label:"Mago",labelPlural:"Il Mago",colore:"#9b6fd4",pfBase:10,
     descr:n=>`Un mago ostile avanza lentamente${n>1?`, con ${n} familiari al seguito`:''}. Non sembra avere fretta.`,
-    num:n=>n
+    num:n=>n,
+    effetti:[{nome:"Magia!",desc:"Il mago attacca a distanza con Intelligenza +1. Ignora la copertura media."}],
+    hasSpecial:true
   },
   {
-    id:"guardie",label:"Guardie",
-    colore:"#5080c0",
+    id:"guardie",label:"Guardia",labelPlural:"Guardie",colore:"#5080c0",pfBase:8,
     descr:n=>`${n*2} guardie in armatura bloccano il passaggio. Hanno ordini precisi e li seguiranno.`,
-    num:n=>n*2
+    num:n=>n*2,
+    effetti:[{nome:"Formazione",desc:"Le guardie non si muovono se adiacenti a un'altra guardia."}]
   },
   {
-    id:"creature",label:"Creature",
-    colore:"#60a060",
+    id:"creature",label:"Creatura",labelPlural:"Creature",colore:"#60a060",pfBase:5,
     descr:n=>`${Math.ceil(n*1.5)} creature sconosciute emergono dal sottosuolo. Il loro comportamento è imprevedibile.`,
-    num:n=>Math.ceil(n*1.5)
+    num:n=>Math.ceil(n*1.5),
+    effetti:[{nome:"Imprevedibile",desc:"Ogni turno tira 1D6: con 1-2 la creatura si muove in direzione casuale invece di attaccare."}]
   }
 ];
 
@@ -661,13 +717,21 @@ function genera(){
 function generaIncontro(incDef){
   const n=numGiocatori;
   const numNemici=incDef.num(n);
+  incDefCorrente=incDef;
 
-  // Costruisce lista combattenti
+  // Inizializza PF
+  pfPG=Array.from({length:n},()=>PF_PG);
+  pfNemici=Array.from({length:numNemici},()=>incDef.pfBase);
+
+  // Costruisce lista combattenti con PF
   const combattenti=[];
-  for(let i=1;i<=n;i++) combattenti.push({nome:`Personaggio ${i}`,tipo:'pg',idx:i});
-  for(let i=1;i<=numNemici;i++) combattenti.push({nome:`${incDef.label} ${numNemici>1?i:''}`.trim(),tipo:'png',colore:incDef.colore,idx:i});
+  for(let i=1;i<=n;i++) combattenti.push({nome:`PG ${i}`,tipo:'pg',idx:i-1,pf:PF_PG,pfMax:PF_PG});
+  for(let i=1;i<=numNemici;i++) combattenti.push({
+    nome:`${incDef.label} ${numNemici>1?i:''}`.trim(),
+    tipo:'png',colore:incDef.colore,idx:i-1,pf:incDef.pfBase,pfMax:incDef.pfBase
+  });
 
-  // Shuffle iniziativa con rng (deterministico per seed)
+  // Shuffle iniziativa
   for(let i=combattenti.length-1;i>0;i--){
     const j=Math.floor(rng()*(i+1));
     [combattenti[i],combattenti[j]]=[combattenti[j],combattenti[i]];
@@ -676,50 +740,81 @@ function generaIncontro(incDef){
   turnoIdx=0;
   incontroAttivo=true;
 
-  // Render lista iniziativa
-  const ul=document.getElementById('initiative-list');
-  ul.innerHTML='';
-  combattenti.forEach((c,i)=>{
-    const li=document.createElement('li');
-    li.id='init-'+i;
-    li.innerHTML=`<span class="init-num">${i+1}</span><span>${c.nome}</span>`;
-    if(i===0) li.classList.add('active-turn');
-    ul.appendChild(li);
-  });
+  // Render lista iniziativa con PF
+  renderInitList();
 
-  // Mappa
+  // Mappa — genera posizioni e ridisegna
   disegnaMappa(incDef,numNemici);
+
+  // Selector PG per movimento
+  const sel=document.getElementById('pg-select');
+  sel.innerHTML='';
+  for(let i=1;i<=n;i++){
+    const opt=document.createElement('option');
+    opt.value=i-1; opt.textContent=`PG ${i}`;
+    sel.appendChild(opt);
+  }
+  document.getElementById('movement-controls').style.display='flex';
 
   // Legenda
   const leg=document.getElementById('map-legend');
   leg.innerHTML='';
-  [
-    {colore:'#c9a84c',label:`${n} personaggi`},
-    {colore:incDef.colore,label:`${numNemici} ${incDef.label}`}
+  [{colore:'#c9a84c',label:`${n} personaggi (10 PF)`},
+   {colore:incDef.colore,label:`${numNemici} ${incDef.labelPlural} (${incDef.pfBase} PF)`}
   ].forEach(({colore,label})=>{
     const d=document.createElement('div'); d.className='legend-item';
     d.innerHTML=`<div class="legend-dot" style="background:${colore}"></div><span>${label}</span>`;
     leg.appendChild(d);
   });
 
-  // Box PNG
-  aggiornaBoxPNG();
+  // Box effetti creature
+  const effBox=document.getElementById('creature-effects-box');
+  const effContent=document.getElementById('creature-effects-content');
+  effContent.innerHTML='';
+  if(incDef.effetti&&incDef.effetti.length>0){
+    incDef.effetti.forEach(e=>{
+      const div=document.createElement('div'); div.className='effect-item';
+      div.innerHTML=`<span class="effect-name">${e.nome}:</span>${e.desc}`;
+      effContent.appendChild(div);
+    });
+    effBox.style.display='block';
+  } else {
+    effBox.style.display='none';
+  }
 
-  // Mostra passo
+  aggiornaBoxPNG();
   document.getElementById('btn-passo').style.display='block';
   aggiornaIndicatoreTurno();
 }
 
+function renderInitList(){
+  const ul=document.getElementById('initiative-list');
+  ul.innerHTML='';
+  ordineInizativa.forEach((c,i)=>{
+    const pf=c.tipo==='pg'?pfPG[c.idx]:pfNemici[c.idx];
+    const pfMax=c.pfMax;
+    const pfLow=pf<=Math.floor(pfMax/3);
+    const li=document.createElement('li');
+    li.id='init-'+i;
+    li.innerHTML=`<span class="init-num">${i+1}</span><span>${c.nome}</span><span class="init-pf${pfLow?' low':''}">${pf}/${pfMax}♥</span>`;
+    if(i===turnoIdx) li.classList.add('active-turn');
+    ul.appendChild(li);
+  });
+}
+
 function passaTurno(){
   if(!incontroAttivo||ordineInizativa.length===0) return;
-  // Rimuovi active dal precedente
   const prevLi=document.getElementById('init-'+turnoIdx);
   if(prevLi) prevLi.classList.remove('active-turn');
-
   turnoIdx=(turnoIdx+1)%ordineInizativa.length;
-
   const nextLi=document.getElementById('init-'+turnoIdx);
   if(nextLi){nextLi.classList.add('active-turn');nextLi.scrollIntoView({behavior:'smooth',block:'nearest'})}
+
+  // Se tocca a un PNG: muovi automaticamente verso PG più vicino
+  const c=ordineInizativa[turnoIdx];
+  if(c.tipo==='png' && posNemici.length>c.idx){
+    muoviNemico(c.idx);
+  }
 
   aggiornaBoxPNG();
   aggiornaIndicatoreTurno();
@@ -728,8 +823,7 @@ function passaTurno(){
 function aggiornaIndicatoreTurno(){
   if(!incontroAttivo||ordineInizativa.length===0) return;
   const c=ordineInizativa[turnoIdx];
-  document.getElementById('turn-indicator').textContent=
-    `Turno di: ${c.nome}`;
+  document.getElementById('turn-indicator').textContent=`Turno di: ${c.nome}`;
 }
 
 function aggiornaBoxPNG(){
@@ -739,40 +833,105 @@ function aggiornaBoxPNG(){
   if(c.tipo==='pg'){
     box.textContent=`Tocca a ${c.nome}. Descrivi la sua azione.`;
   } else {
-    // Logica PNG semplificata dal flowchart
     box.textContent=calcolaAzionePNG(c);
   }
 }
 
 function calcolaAzionePNG(png){
-  // Seleziona bersagli PG disponibili
-  const pg=ordineInizativa.filter(x=>x.tipo==='pg');
-  if(pg.length===0) return `${png.nome} non trova bersagli validi.`;
-
-  // Bersaglio casuale tra i PG (deterministico dal turno)
+  const pg=ordineInizativa.filter(x=>x.tipo==='pg'&&pfPG[x.idx]>-4);
+  if(pg.length===0) return `${png.nome} non trova bersagli validi (tutti fuori combattimento).`;
   const bIdx=Math.floor(rng()*pg.length);
   const bersaglio=pg[bIdx].nome;
-
-  // Flowchart semplificato:
-  // 1. Regole speciali? (mago sì, altri no)
-  if(png.nome.toLowerCase().includes('mago')){
-    const magie=["lancia una palla di fuoco","evoca un campo di forza","usa un incantesimo di rallentamento","proietta un'illusione confondente"];
-    const m=magie[Math.floor(rng()*magie.length)];
-    return `${png.nome} ${m} su ${bersaglio}.`;
+  if(incDefCorrente&&incDefCorrente.hasSpecial){
+    const magie=["lancia una palla di fuoco","proietta un raggio di gelo","usa un incantesimo di rallentamento","evoca un campo di forza"];
+    return `${png.nome} ${magie[Math.floor(rng()*magie.length)]} su ${bersaglio}. [Intelligenza +1, distanza]`;
   }
-  // 2. Corpo a corpo — attacca il bersaglio più vicino
   const azioni=["attacca","carica","colpisce","si lancia contro"];
-  const a=azioni[Math.floor(rng()*azioni.length)];
-  if(pg.length>1){
-    return `${png.nome} ${a} ${bersaglio} (bersaglio scelto casualmente tra ${pg.length} disponibili).`;
+  const extra=incDefCorrente&&incDefCorrente.id==='banditi'?' [Fisico +1]':'';
+  return `${png.nome} ${azioni[Math.floor(rng()*azioni.length)]} ${bersaglio}${extra}.${pg.length>1?' (bersaglio casuale)':''}`;
+}
+
+// ── MOVIMENTO NEMICI (verso PG più vicino) ──
+function muoviNemico(idx){
+  if(idx>=posNemici.length||posPG.length===0) return;
+  const nem=posNemici[idx];
+  const step=incDefCorrente&&incDefCorrente.id==='lupi'?20:10; // lupi veloce=10m→20px, altri=5m→10px
+  let minDist=Infinity, target=null;
+  posPG.forEach(p=>{
+    const d=Math.hypot(p.x-nem.x,p.y-nem.y);
+    if(d<minDist){minDist=d;target=p;}
+  });
+  if(!target) return;
+  const dx=target.x-nem.x, dy=target.y-nem.y;
+  const dist=Math.hypot(dx,dy);
+  if(dist>step){
+    nem.x+=dx/dist*step;
+    nem.y+=dy/dist*step;
   }
-  return `${png.nome} ${a} ${bersaglio}.`;
+  ridisegnaSegnalini();
+}
+
+// ── MOVIMENTO PG ──
+function muoviPG(dir){
+  const sel=document.getElementById('pg-select');
+  const idx=parseInt(sel.value);
+  if(idx>=posPG.length) return;
+  const step=10;
+  const pg=posPG[idx];
+  if(dir==='su')  pg.y=Math.max(15,pg.y-step);
+  if(dir==='giu') pg.y=Math.min(mapH-15,pg.y+step);
+  if(dir==='sx')  pg.x=Math.max(15,pg.x-step);
+  if(dir==='dx')  pg.x=Math.min(mapW-15,pg.x+step);
+  ridisegnaSegnalini();
+}
+
+function ridisegnaSegnalini(){
+  if(!incDefCorrente) return;
+  const canvas=document.getElementById('mappa');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.save(); ctx.scale(mapRatio,mapRatio);
+  // Ridisegna sfondo + elementi statici (usando snapshot salvato)
+  ctx.drawImage(mapSnapshot,0,0,mapW,mapH);
+  // Nemici
+  posNemici.forEach((n,i)=>{
+    const pf=pfNemici[i],pfMax=incDefCorrente.pfBase;
+    ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(n.x+3,n.y+4,10,6,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=pfNemici[i]<=0?'#555':incDefCorrente.colore;
+    ctx.beginPath(); ctx.arc(n.x,n.y,11,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(incDefCorrente.label[0],n.x,n.y);
+    // PF bar
+    const bw=22,bh=3,bx=n.x-bw/2,by=n.y-18;
+    ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillRect(bx,by,bw,bh);
+    ctx.fillStyle=pf>pfMax/2?'#4a8':pf>0?'#e84':'#c44';
+    ctx.fillRect(bx,by,bw*(Math.max(0,pf)/pfMax),bh);
+  });
+  // PG
+  posPG.forEach((p,i)=>{
+    const pf=pfPG[i];
+    ctx.fillStyle='rgba(201,168,76,.18)'; ctx.beginPath(); ctx.arc(p.x,p.y,13,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=pf<=0?'#555':'#c9a84c'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(p.x-11,p.y); ctx.lineTo(p.x+11,p.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.x,p.y-11); ctx.lineTo(p.x,p.y+11); ctx.stroke();
+    ctx.strokeStyle='rgba(201,168,76,.45)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(p.x,p.y,13,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle='rgba(201,168,76,.8)'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('P'+(i+1),p.x,p.y);
+    // PF bar
+    const bw=26,bh=3,bx=p.x-bw/2,by=p.y-20;
+    ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillRect(bx,by,bw,bh);
+    ctx.fillStyle=pf>5?'#4a8':pf>2?'#e84':'#c44';
+    ctx.fillRect(bx,by,bw*(Math.max(0,pf)/PF_PG),bh);
+  });
+  ctx.restore();
 }
 
 // ══════════════════════════════════════════
 //  MAPPA PROCEDURALE
 // ══════════════════════════════════════════
 function rndR(min,max){return Math.floor(rng()*(max-min+1))+min}
+let mapSnapshot=null;
 
 function disegnaMappa(incDef,numNemici){
   const canvas=document.getElementById('mappa');
@@ -784,6 +943,7 @@ function disegnaMappa(incDef,numNemici){
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
   const ctx=canvas.getContext('2d');
   ctx.scale(ratio,ratio);
+  mapW=W; mapH=H; mapRatio=ratio;
 
   // Sfondo
   ctx.fillStyle='#0d0c10'; ctx.fillRect(0,0,W,H);
@@ -800,17 +960,16 @@ function disegnaMappa(incDef,numNemici){
   ctx.ellipse(W*.5,H*.5,rndR(120,180),rndR(80,130),rng()*0.5,0,Math.PI*2);
   ctx.fill();
 
-  const occupate=[];
+  mapOccupate=[];
 
   // Edifici
   for(let i=0;i<rndR(2,4);i++){
     let x,y,w,h,t=0;
     do{w=rndR(50,100);h=rndR(35,70);x=rndR(25,W-w-25);y=rndR(25,H-h-25);t++}
-    while(t<20&&occupate.some(z=>x<z.x+z.w+18&&x+w>z.x-18&&y<z.y+z.h+18&&y+h>z.y-18));
-    occupate.push({x,y,w,h});
+    while(t<20&&mapOccupate.some(z=>x<z.x+z.w+18&&x+w>z.x-18&&y<z.y+z.h+18&&y+h>z.y-18));
+    mapOccupate.push({x,y,w,h});
     ctx.fillStyle='rgba(80,70,60,.45)'; ctx.fillRect(x,y,w,h);
     ctx.strokeStyle='rgba(160,140,100,.55)'; ctx.lineWidth=1.5; ctx.strokeRect(x,y,w,h);
-    // Porta
     ctx.strokeStyle='rgba(200,170,100,.85)'; ctx.lineWidth=3;
     const lato=rndR(0,3);
     if(lato===0){ctx.beginPath();ctx.moveTo(x+w/2-7,y);ctx.lineTo(x+w/2+7,y);ctx.stroke()}
@@ -823,7 +982,7 @@ function disegnaMappa(incDef,numNemici){
   for(let i=0;i<rndR(5,10);i++){
     let tx,ty,t=0;
     do{tx=rndR(18,W-18);ty=rndR(18,H-18);t++}
-    while(t<15&&occupate.some(z=>tx>z.x-14&&tx<z.x+z.w+14&&ty>z.y-14&&ty<z.y+z.h+14));
+    while(t<15&&mapOccupate.some(z=>tx>z.x-14&&tx<z.x+z.w+14&&ty>z.y-14&&ty<z.y+z.h+14));
     const r=rndR(7,14);
     ctx.fillStyle='rgba(28,68,28,.7)'; ctx.beginPath(); ctx.arc(tx,ty,r,0,Math.PI*2); ctx.fill();
     ctx.strokeStyle='rgba(45,90,35,.5)'; ctx.lineWidth=1; ctx.stroke();
@@ -854,36 +1013,32 @@ function disegnaMappa(incDef,numNemici){
     ctx.closePath(); ctx.fill(); ctx.stroke();
   }
 
-  // Nemici
-  const posNemici=[];
+  // Salva snapshot dello sfondo (senza segnalini)
+  mapSnapshot=new Image();
+  mapSnapshot.src=canvas.toDataURL();
+
+  // Inizializza posizioni nemici
+  posNemici=[];
   for(let ni=0;ni<numNemici;ni++){
     let nx,ny,t=0;
     do{nx=rndR(35,W-35);ny=rndR(35,H-100);t++}
     while(t<40&&(
-      occupate.some(z=>nx>z.x-22&&nx<z.x+z.w+22&&ny>z.y-22&&ny<z.y+z.h+22)||
+      mapOccupate.some(z=>nx>z.x-22&&nx<z.x+z.w+22&&ny>z.y-22&&ny<z.y+z.h+22)||
       posNemici.some(p=>Math.hypot(nx-p.x,ny-p.y)<28)
     ));
     posNemici.push({x:nx,y:ny});
-    ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(nx+3,ny+5,10,6,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=incDef.colore; ctx.beginPath(); ctx.arc(nx,ny,11,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=1.5; ctx.stroke();
-    ctx.fillStyle='#fff'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(incDef.label[0],nx,ny);
   }
 
-  // Personaggi (fila in basso)
+  // Inizializza posizioni PG
+  posPG=[];
   const spacing=Math.min(50,(W-60)/Math.max(numGiocatori,1));
   const startX=W/2-(numGiocatori-1)*spacing/2;
   for(let pi=0;pi<numGiocatori;pi++){
-    const px=startX+pi*spacing, py=H-40;
-    ctx.strokeStyle='#c9a84c'; ctx.lineWidth=2.5;
-    ctx.beginPath(); ctx.moveTo(px-11,py); ctx.lineTo(px+11,py); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(px,py-11); ctx.lineTo(px,py+11); ctx.stroke();
-    ctx.fillStyle='rgba(201,168,76,.18)'; ctx.beginPath(); ctx.arc(px,py,13,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='rgba(201,168,76,.45)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(px,py,13,0,Math.PI*2); ctx.stroke();
-    ctx.fillStyle='rgba(201,168,76,.8)'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('P'+(pi+1),px,py);
+    posPG.push({x:startX+pi*spacing, y:H-40});
   }
+
+  // Disegna segnalini
+  ridisegnaSegnalini();
 }
 
 // ══════════════════════════════════════════
@@ -904,6 +1059,7 @@ function riavvia(){
   // Reset stato
   rng=null; seedCorrente=null; cartaCorrente=0; maxCarte=0;
   storia=[]; primaVolta=true; turnoIdx=0; ordineInizativa=[]; incontroAttivo=false;
+  posPG=[]; posNemici=[]; pfPG=[]; pfNemici=[]; incDefCorrente=null; mapSnapshot=null;
   document.getElementById('end-screen').style.display='none';
   document.getElementById('end-screen').classList.remove('visible');
   document.getElementById('btn-oracle').disabled=false;
@@ -915,6 +1071,8 @@ function riavvia(){
   document.getElementById('seed-input').value='';
   document.getElementById('btn-passo').style.display='none';
   document.getElementById('turn-indicator').textContent='';
+  document.getElementById('movement-controls').style.display='none';
+  document.getElementById('creature-effects-box').style.display='none';
   ['card-luogo','card-seme'].forEach(id=>document.getElementById(id).classList.remove('visible'));
   const ss=document.getElementById('stella-section');
   ss.classList.remove('visible'); ss.style.display='none';
@@ -975,4 +1133,4 @@ aggiornaSlider();
 })();
 </script>
 </body>
-    </html>
+</html>
