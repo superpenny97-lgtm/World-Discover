@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regolamento — Oracolo della Scrittura</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel+Decorative:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0d0b;--gold:#c9a84c;--cream:#f5f0e8;--dim:#7a7060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cormorant Garamond',serif;background:var(--bg);color:var(--cream);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:60px 24px 100px}
+body::after{content:'';position:fixed;inset:16px;border:1px solid rgba(201,168,76,.12);pointer-events:none}
+
+h1{font-family:'Cinzel Decorative',serif;font-size:clamp(1rem,4vw,1.4rem);color:var(--gold);
+  letter-spacing:5px;font-weight:400;text-align:center;margin-bottom:8px}
+.subtitle{font-size:.8rem;color:var(--dim);letter-spacing:2px;font-style:italic;text-align:center;margin-bottom:52px}
+
+.section{width:100%;max-width:660px;margin-bottom:44px}
+.section h2{font-family:'Cinzel Decorative',serif;font-size:.75rem;color:var(--gold);
+  letter-spacing:3px;opacity:.75;margin-bottom:18px;padding-bottom:10px;
+  border-bottom:1px solid rgba(201,168,76,.15)}
+.section p{font-size:1.05rem;line-height:1.85;color:var(--cream);font-weight:300;margin-bottom:16px}
+.section p:last-child{margin-bottom:0}
+.section strong{font-weight:400;color:var(--gold);font-style:normal}
+.section em{font-style:italic;color:rgba(245,240,232,.8)}
+
+/* Box esempio */
+.example{background:rgba(255,255,255,.03);border-left:2px solid rgba(201,168,76,.25);
+  padding:14px 18px;margin:16px 0;border-radius:0 3px 3px 0;font-style:italic;
+  font-size:.95rem;line-height:1.75;color:rgba(245,240,232,.7)}
+.example strong{font-style:normal;color:rgba(201,168,76,.7);font-weight:400}
+
+/* Lista caratteristiche */
+.char-list{list-style:none;margin:12px 0 18px;display:flex;flex-direction:column;gap:8px}
+.char-list li{display:flex;gap:12px;align-items:baseline;font-size:1rem;line-height:1.7;font-weight:300}
+.char-name{font-family:'Cinzel Decorative',serif;font-size:.7rem;color:var(--gold);
+  opacity:.8;min-width:110px;letter-spacing:1px}
+
+/* Tabella difficoltà */
+.diff-note{font-size:.88rem;color:var(--dim);font-style:italic;margin-top:6px}
+
+/* Nota callout */
+.callout{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);
+  border-radius:3px;padding:16px 20px;margin:16px 0;font-size:.95rem;line-height:1.75;
+  color:rgba(245,240,232,.75)}
+.callout strong{color:var(--gold);font-weight:400}
+
+/* Frase evidenziata fine sezione */
+.highlight-note{font-family:'Cinzel Decorative',serif;font-size:.75rem;color:#a98fd4;
+  letter-spacing:2px;text-align:center;padding:14px;border:1px solid rgba(123,94,167,.2);
+  border-radius:3px;margin-top:20px;line-height:1.6}
+
+.section-divider{width:40px;height:1px;background:rgba(201,168,76,.15);margin:40px auto}
+
+.back-link{margin-top:16px;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(201,168,76,.35);text-decoration:none;border-bottom:1px solid rgba(201,168,76,.12);
+  padding-bottom:1px;transition:all .25s;display:inline-block}
+.back-link:hover{color:var(--gold);border-bottom-color:rgba(201,168,76,.4)}
+
+@media(max-width:600px){
+  body{padding:40px 18px 80px}
+  body::after{inset:10px}
+  .char-name{min-width:90px}
+}
+</style>
+</head>
+<body>
+
+<h1>Regolamento</h1>
+<p class="subtitle">Oracolo della Scrittura</p>
+
+<!-- ── IL GIOCO ── -->
+<div class="section">
+  <h2>Il Gioco</h2>
+  <p>Oracolo della Scrittura è un gioco narrativo cooperativo ispirato a <em>The Quiet Year</em>. Ogni sessione è una storia costruita carta dopo carta, in cui i giocatori descrivono un mondo che prende forma attraverso i prompt degli arcani.</p>
+</div>
+
+<!-- ── STRUTTURA PARTITA ── -->
+<div class="section">
+  <h2>Struttura della Partita</h2>
+  <p>Ogni partita dura <strong>10 carte per personaggio</strong>. Con 2 personaggi si estraggono 20 carte, con 3 se ne estraggono 30, e così via.</p>
+  <p>Ogni carta estratta genera un prompt <em>topografico</em> — da disegnare sulla mappa condivisa — e un prompt <em>narrativo</em> — da interpretare descrivendo chi, come e perché si trova in quel luogo.</p>
+</div>
+
+<!-- ── SEED ── -->
+<div class="section">
+  <h2>Il Seed</h2>
+  <p>Ogni partita è identificata da un <strong>seed</strong> alfanumerico. Annotare il seed permette di riprodurre esattamente la stessa sequenza di carte in una sessione futura. Il seed può essere inserito manualmente prima di iniziare.</p>
+</div>
+
+<!-- ── LA STELLA ── -->
+<div class="section">
+  <h2>La Stella</h2>
+  <p>La <strong>Stella</strong> è un arcano speciale con probabilità del 15% ad ogni estrazione. Quando compare, si avvia un incontro di combattimento la cui difficoltà scala automaticamente con il numero di personaggi presenti.</p>
+  <p>L'ordine di iniziativa viene generato casualmente e mostrato a fianco della mappa. Il tasto <em>Passo →</em> avanza il turno; quando tocca a un nemico il box in fondo alla mappa descrive la sua azione seguendo il comportamento dei PNG.</p>
+  <div class="highlight-note">Leggi il regolamento completo per imparare come gestire il combattimento e creare personaggi completi!</div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ── TEST E CARATTERISTICHE ── -->
+<div class="section">
+  <h2>Test e Caratteristiche</h2>
+  <p>Durante l'avventura vi verrà chiesto di effettuare dei <strong>Test</strong>. Un Test rappresenta una prova che il vostro personaggio è tenuto a sostenere ed è generalmente associato a una <strong>Caratteristica</strong>.</p>
+  <p>Le Caratteristiche rappresentano quanto il vostro personaggio è talentuoso in determinate azioni:</p>
+  <ul class="char-list">
+    <li><span class="char-name">Fisico</span><span>Stamina e forza fisica del personaggio.</span></li>
+    <li><span class="char-name">Sensi</span><span>Prontezza di riflessi e precisione.</span></li>
+    <li><span class="char-name">Carisma</span><span>Savoir-faire e presenza sociale.</span></li>
+    <li><span class="char-name">Intelligenza</span><span>Ingegno e cognizione.</span></li>
+  </ul>
+  <p>Provare a spostare una cassa sarà associato a un Test Fisico, sentire un suono molto basso sarà un Test Sensi, e così via.</p>
+</div>
+
+<!-- ── I DADI ── -->
+<div class="section">
+  <h2>I Dadi</h2>
+  <p>Ogni personaggio ha a disposizione dei <strong>dadi a 6 facce</strong> (D6) con cui effettuare i Test. Tutti i Test vengono effettuati tirando <strong>2D6</strong>, a cui potranno essere sommati o sottratti <strong>Modificatori</strong> derivanti da abilità, oggetti, sostanze o situazioni.</p>
+  <p>Durante la creazione del personaggio distribuite i seguenti Modificatori: <strong>+2, +1, –1</strong>. Essi determinano il numero di dadi aggiuntivi (o in meno) che avrete per effettuare un Test.</p>
+  <div class="example">
+    <strong>Esempio.</strong> James ha bonus +2 a Percezione, quindi tirerà 4D6 per il Test (2 base +2 di bonus).
+  </div>
+  <p>I personaggi devono superare o eguagliare dei <strong>Target</strong> che vanno da 5 (molto facile) a 24 (quasi impossibile).</p>
+</div>
+
+<!-- ── SUCCESSI E FALLIMENTI ── -->
+<div class="section">
+  <h2>Successi, Fallimenti e Catastrofi</h2>
+  <p><strong>Successo automatico:</strong> si ottiene un doppio 6 con un singolo tiro.</p>
+  <p><strong>Fallimento automatico:</strong> si ottiene un doppio 1 con un singolo tiro.</p>
+  <p><strong>Successo catastrofico:</strong> tirando 4D6 si ottiene sia un doppio 6 che un doppio 1. L'azione è un successo automatico, ma il personaggio ha <em>Sballato</em> (vedi sotto).</p>
+</div>
+
+<!-- ── TUTTO PER TUTTO ── -->
+<div class="section">
+  <h2>Tutto per Tutto</h2>
+  <p>Un personaggio che fallisce un test può scegliere di <strong>Continuare l'Azione</strong> per ribaltare il risultato. Tira 1D6 aggiuntivo il cui risultato viene sommato al punteggio attuale.</p>
+  <div class="callout">
+    <strong>Attenzione:</strong> il dado Tutto per Tutto <em>non conta</em> per successi o fallimenti automatici.
+  </div>
+</div>
+
+<!-- ── SBALLARE ── -->
+<div class="section">
+  <h2>Sballare</h2>
+  <p>Se, continuando l'azione, si verifica una di queste condizioni:</p>
+  <ul class="char-list">
+    <li><span class="char-name">—</span><span>Si ottiene un punteggio di 1 sul dado aggiuntivo.</span></li>
+    <li><span class="char-name">—</span><span>Non si supera comunque il Target del Test.</span></li>
+  </ul>
+  <p>Il personaggio ha <strong>Sballato</strong>: l'azione fallisce automaticamente e al prossimo Test dovrà tirare con un dado in meno. Lo stato Sballato termina dopo il Test successivo (tramite oggetti, eventi o abilità).</p>
+</div>
+
+<!-- ── COMBATTIMENTO ── -->
+<div class="section">
+  <h2>Combattimento</h2>
+  <p>All'inizio di ogni combattimento è necessario effettuare un <strong>Test Iniziativa</strong>: si tirano 2D6 per ogni personaggio o PNG presente. Il turno procede dal punteggio più alto al più basso.</p>
+  <p>In combattimento è possibile effettuare <strong>2 azioni</strong> tra:</p>
+  <ul class="char-list">
+    <li><span class="char-name">—</span><span>Attaccare (corpo a corpo o a distanza).</span></li>
+    <li><span class="char-name">—</span><span>Muoversi di massimo 5 metri.</span></li>
+    <li><span class="char-name">—</span><span>Azioni speciali (attivare macchinari, usare abilità…).</span></li>
+  </ul>
+</div>
+
+<!-- ── CORPO A CORPO ── -->
+<div class="section">
+  <h2>Attacchi Corpo a Corpo</h2>
+  <p>Determinati da <strong>tiri contrapposti sulla Caratteristica Fisico</strong> tra attaccante e difensore. L'attaccante tira sempre prima, poi il difensore tira per difendere.</p>
+  <div class="example">
+    <strong>Esempio.</strong> Il Solitario attacca un teppista. Il Solitario ha +1 a Fisico, il teppista +0.<br>
+    Tira l'attaccante: 3D6 → 4, 1, 2 (totale 7).<br>
+    Tira il difensore: 2D6 → 4, 4 (totale 8). L'attacco è parato.
+  </div>
+  <p>Il personaggio che ha fallito può scegliere il <strong>Tutto per Tutto</strong>: tira 1D6 e somma il risultato al punteggio attuale.</p>
+  <div class="example">
+    <strong>Esempio (continua).</strong> Il Solitario sceglie il Tutto per Tutto dal punteggio 7. Tira e ottiene 5 → totale 12, superando l'8 del teppista. Il teppista sceglie a sua volta il Tutto per Tutto, ma ottiene 1 e Sballa: l'attacco va a segno.
+  </div>
+  <ul class="char-list" style="margin-top:16px">
+    <li><span class="char-name">Attaccante sballa</span><span>Attacco fallito; il difensore può effettuare un contrattacco automatico, poi il combattimento termina.</span></li>
+    <li><span class="char-name">Difensore sballa</span><span>L'attacco va a segno.</span></li>
+    <li><span class="char-name">Entrambi sballano</span><span>Nessuno subisce danno.</span></li>
+    <li><span class="char-name">Parità</span><span>Vince sempre l'attacco.</span></li>
+  </ul>
+</div>
+
+<!-- ── DISTANZA ── -->
+<div class="section">
+  <h2>Attacchi a Distanza</h2>
+  <p>Determinati da un <strong>Test Percezione</strong> dell'attaccante contro il Target del bersaglio:</p>
+  <ul class="char-list" style="margin-top:8px">
+    <li><span class="char-name">Target 7</span><span>Bersaglio senza copertura.</span></li>
+    <li><span class="char-name">Target 15</span><span>Bersaglio in copertura media.</span></li>
+    <li><span class="char-name">Target 20</span><span>Bersaglio in copertura totale.</span></li>
+  </ul>
+</div>
+
+<!-- ── COMPORTAMENTO PNG ── -->
+<div class="section">
+  <h2>Comportamento dei PNG</h2>
+  <p>I nemici <strong>non attaccano</strong> bersagli con salute tra 0 e –4. Se dispongono di regole speciali o magie le usano per prime; se ingaggiati corpo a corpo attaccano il bersaglio con cui sono in contatto; altrimenti si muovono verso il personaggio non ingaggiato più vicino e lo attaccano.</p>
+  <p>Quando più bersagli sono equivalenti, il bersaglio viene scelto casualmente.</p>
+</div>
+
+<div class="section-divider"></div>
+
+<a href="index.html" class="back-link">← Torna al gioco</a>
+
+</body>
+</html>
